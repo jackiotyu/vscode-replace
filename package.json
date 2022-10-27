@@ -1,0 +1,83 @@
+{
+	"name": "vscode-replace",
+	"displayName": "vscode-replace",
+	"description": "run command in wt",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.72.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:vscode-replace.replace"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "vscode-replace.replace",
+				"title": "Hello World"
+			}
+		],
+
+		"configuration": {
+			"type": "object",
+			"title": "vscode-replace设置",
+			"properties": {
+				"vscode-replace.commands": {
+					"type": "array",
+					"default": [],
+					"description": "注册replace命令",
+					"items": {
+						"type": "object",
+						"title": "replace命令",
+						"properties": {
+							"name": {
+								"type": "string",
+								"description": "命令名称"
+							},
+							"match": {
+								"type": "string",
+								"description": "用于匹配文字的正则表达式",
+								"default": "([0-9]{1,})rpx"
+							},
+							"replace": {
+								"type": "string",
+								"description": "匹配后的文本，$1表示匹配到的第一个字符",
+								"default": "`${($1 / 2)}px`"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "yarn run package",
+		"compile": "webpack",
+		"watch": "webpack --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"compile-tests": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "16.x",
+		"@types/vscode": "^1.72.0",
+		"@typescript-eslint/eslint-plugin": "^5.27.0",
+		"@typescript-eslint/parser": "^5.27.0",
+		"@vscode/test-electron": "^2.1.3",
+		"eslint": "^8.16.0",
+		"glob": "^8.0.3",
+		"mocha": "^10.0.0",
+		"ts-loader": "^9.3.0",
+		"typescript": "^4.7.2",
+		"webpack": "^5.72.1",
+		"webpack-cli": "^4.9.2"
+	}
+}
