@@ -11,8 +11,7 @@ type ReplaceGroup = Array<ReplaceCommand>;
 
 async function transform() {
     const activeEditor = vscode.window.activeTextEditor;
-    const group = vscode.workspace.getConfiguration('vscode-replace').get('group') as ReplaceGroup;
-
+    const group = vscode.workspace.getConfiguration('vscode-replace').get('commands') as ReplaceGroup;
     if (!group) {
         return;
     }
