@@ -4,6 +4,7 @@ interface ReplaceCommand {
     name: string;
     match: RegExp;
     replace: string;
+    description?: string;
 }
 
 type ReplaceGroup = Array<ReplaceCommand>;
@@ -15,7 +16,7 @@ async function transform() {
         return
     }
 
-    let items: vscode.QuickPickItem[] = group.map(item => ({ label: item.name }))
+    let items: vscode.QuickPickItem[] = group.map(item => ({ label: item.name, description: item.description }))
 
     let selection = (await vscode.window.showQuickPick(items)) as vscode.QuickPickItem;
     if (!selection) {

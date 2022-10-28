@@ -3,6 +3,7 @@
 	"displayName": "vscode-replace",
 	"description": "run command in wt",
 	"version": "0.0.1",
+	"repository": "https://github.com/jackiotyu/vscode-replace.git",
 	"engines": {
 		"vscode": "^1.72.0"
 	},
