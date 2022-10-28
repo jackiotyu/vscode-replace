@@ -48,7 +48,7 @@
 							},
 							"description": {
 								"type": "string",
-								"description": "描述命令内容",
+								"description": "描述命令内容"
 							}
 						}
 					}
