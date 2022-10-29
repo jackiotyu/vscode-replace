@@ -1,8 +1,9 @@
 {
 	"name": "vscode-replace",
 	"displayName": "vscode-replace",
-	"description": "run command in wt",
+	"description": "替换匹配的内容，可以使用js语句",
 	"version": "0.0.1",
+	"icon": "images/icon.png",
 	"repository": "https://github.com/jackiotyu/vscode-replace.git",
 	"engines": {
 		"vscode": "^1.72.0"
@@ -18,7 +19,7 @@
 		"commands": [
 			{
 				"command": "vscode-replace.replace",
-				"title": "Replacement"
+				"title": "🔃Replacement"
 			}
 		],
 		"configuration": {
@@ -53,6 +54,62 @@
 							}
 						}
 					}
+				},
+				"vscode-replace.setting": {
+					"type": "object",
+					"description": "replace设置",
+					"properties": {
+						"moreParam": {
+							"type":"boolean",
+							"description": "开启更多参数，打开后可获取到$&、__offset__等",
+							"default": false
+						},
+						"keyMap": {
+							"type": "object",
+							"description": "配置更多参数的变量名映射，目前所有参数为：\n__inner_res__、__offset__、__origin_text__、$&，\n如需要替换的文本中有重名，请替换该变量名，防止运行失败",
+							"properties": {
+								"result": {
+									"type": "string",
+									"default": "__inner_res__",
+									"description": "内部运算使用的变量名，无特殊情况，不需要设置该项"
+								},
+								"offset": {
+									"type": "string",
+									"default": "__offset__",
+									"description": "匹配到的子字符串在原字符串中的偏移量。（比如，如果原字符串是 'abcd'，匹配到的子字符串是 'bc'，那么这个参数将会是 1）"
+								},
+								"originText": {
+									"type": "string",
+									"default": "__origin_text__",
+									"description": "被匹配的原字符串"
+								},
+								"match": {
+									"type": "string",
+									"default": "__match__",
+									"description": "匹配的子串"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"configurationDefaults": {
+			"vscode-replace.commands": [
+				{
+					"name": "rpx2px",
+					"match": "([0-9]{1,})rpx",
+					"replace": "`${($1 / 2)}px`",
+					"description": "rpx转换px"
+				}
+			],
+			"vscode-replace.setting": {
+				"moreParam": false,
+				"keyMap": {
+					"result": "__inner_res__",
+					"offset": "__offset__",
+					"originText": "__origin_text__",
+					"match": "$&"
 				}
 			}
 		}
