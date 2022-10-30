@@ -22,6 +22,11 @@ async function getCommand() {
  */
 function getReplaceText(command: ReplaceCommand, text: string, ...args: any[]) {
     const { replace } = command;
+
+    if (replace === '' || replace === undefined) {
+        throw new Error('请输入替换的js表达式');
+    }
+
     const { moreParam, keyMap } = getSetting();
 
     let argGroup = args.slice(0, -2);
@@ -167,20 +172,21 @@ async function markChange(
         return false;
     });
 
-    await activeEditor.edit(
-        (builder) => {
-            replaceOperationList.forEach((item) => {
-                builder.replace(item.range, item.text);
-            });
-        },
-        { undoStopBefore: false, undoStopAfter: false },
-    );
+    if (replaceOperationList.length) {
+        await activeEditor.edit(
+            (builder) => {
+                replaceOperationList.forEach((item) => {
+                    builder.replace(item.range, item.text);
+                });
+            },
+            { undoStopBefore: false, undoStopAfter: false },
+        );
+    }
 
     if (errorInfo) {
         cancelDecoration();
         await restoreText(activeEditor, contentList);
     } else {
-        console.log(contentList.map((i) => i.previewRange));
         setMatchTextHighlight(
             activeEditor,
             contentList.map((i) => i.previewRange),
@@ -227,11 +233,10 @@ async function transform(activeEditor: vscode.TextEditor) {
             title: '输入替换文本的正则表达式',
             placeHolder: '请输入js表达式',
             value: command.replace,
-            validateInput(value) {
-                promise.then(() => {
-                    markChange(value, activeEditor, contentList, command);
+            async validateInput(value) {
+                return promise.then(() => {
+                    return markChange(value, activeEditor, contentList, command);
                 });
-                return null;
             },
         });
         cancelDecoration();
