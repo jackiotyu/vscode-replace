@@ -1,4 +1,4 @@
-type KeyMap = Record<'result' | 'offset' | 'originText' | 'match', string>;
+type KeyMap = Record<'offset' | 'originText' | 'match', string>;
 
 interface ReplaceCommand {
     name: string;
@@ -13,4 +13,17 @@ interface ReplaceSetting {
     keyMap?: KeyMap;
 }
 
+type vscode = typeof import('vscode');
+
+declare module vscode {
+    type QuickInputButton = import('vscode').QuickInputButton;
+}
+
+interface PickCommand {
+    command: ReplaceCommand;
+    button: vscode.QuickInputButton;
+}
+
 type ReplaceGroup = Array<ReplaceCommand>;
+
+type SelectCommand = ReplaceCommand | PickCommand | undefined;

@@ -119,11 +119,6 @@
 							"type": "object",
 							"description": "配置更多参数的变量名映射，目前所有参数为：\n__inner_res__、__offset__、__origin_text__、$&，\n如需要替换的文本中有重名，请替换该变量名，防止运行失败",
 							"properties": {
-								"result": {
-									"type": "string",
-									"default": "__inner_res__",
-									"description": "内部运算使用的变量名，无特殊情况，不需要设置该项"
-								},
 								"offset": {
 									"type": "string",
 									"default": "__offset__",
