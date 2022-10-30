@@ -1,17 +1,18 @@
 import * as vscode from 'vscode';
-import { transform } from "./main";
+import { transform } from './main';
+import { ReplaceExplorer } from './ui';
+import { SELECT_OPTION_EVENT, REPLACE_EVENT } from './constants';
+import { SelectOptionEvent } from './event';
 
 export function activate(context: vscode.ExtensionContext) {
-	// let transformFile = vscode.commands.registerCommand('vscode-replace.replace', () => {
-	// 	transform();
-	// });
-
-	let textTransform = vscode.commands.registerTextEditorCommand('vscode-replace.replace', (editor) => {
-		transform(editor);
-	})
-
-	context.subscriptions.push(textTransform);
-	// context.subscriptions.push(transformFile);
+    let textTransform = vscode.commands.registerTextEditorCommand(REPLACE_EVENT, (editor) => {
+        transform(editor);
+    });
+    context.subscriptions.push(textTransform);
+    vscode.commands.registerCommand(SELECT_OPTION_EVENT, (command: ReplaceCommand) => {
+        SelectOptionEvent.fire(command);
+    });
+    new ReplaceExplorer(context);
 }
 
 export function deactivate() {}

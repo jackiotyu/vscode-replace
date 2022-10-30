@@ -1,10 +1,16 @@
 {
-	"name": "vscode-replace",
-	"displayName": "vscode-replace",
+	"name": "jsReplace",
+	"displayName": "jsReplace",
 	"description": "替换匹配的内容，可以使用js语句",
 	"version": "0.0.1",
 	"icon": "images/icon.png",
-	"repository": "https://github.com/jackiotyu/vscode-replace.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jackiotyu/vscode-replace.git"
+	},
+	"bugs": {
+		"url": "https://github.com/jackiotyu/vscode-replace/issues"
+	},
 	"engines": {
 		"vscode": "^1.72.0"
 	},
@@ -12,21 +18,66 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscode-replace.replace"
+		"onStartupFinished",
+		"onCommand:jsReplace.replace"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "ReplaceExplorer",
+					"icon": "images/icon.png",
+					"title": "JS Replace"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "ReplaceExplorer",
+				"when": "workbenchState == empty"
+			}
+		],
+		"views": {
+			"ReplaceExplorer": [
+				{
+					"id": "OptionView",
+					"name": "选项"
+				},
+				{
+					"id": "MatchView",
+					"name": "匹配区"
+				},
+				{
+					"id": "ReplaceView",
+					"name": "替换区"
+				},
+				{
+					"id": "ResultView",
+					"name": "结果区"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "jsReplace.replace",
+					"when": "view == jsReplace",
+					"group": "navigation"
+				}
+			]
+		},
 		"commands": [
 			{
-				"command": "vscode-replace.replace",
-				"title": "🔃Replacement"
+				"command": "jsReplace.replace",
+				"title": "🔃JSReplace"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "vscode-replace设置",
+			"title": "jsReplace设置",
 			"properties": {
-				"vscode-replace.commands": {
+				"jsReplace.commands": {
 					"type": "array",
 					"default": [],
 					"description": "注册replace命令",
@@ -55,12 +106,12 @@
 						}
 					}
 				},
-				"vscode-replace.setting": {
+				"jsReplace.setting": {
 					"type": "object",
 					"description": "replace设置",
 					"properties": {
 						"moreParam": {
-							"type":"boolean",
+							"type": "boolean",
 							"description": "开启更多参数，打开后可获取到$&、__offset__等",
 							"default": false
 						},
@@ -95,7 +146,7 @@
 			}
 		},
 		"configurationDefaults": {
-			"vscode-replace.commands": [
+			"jsReplace.commands": [
 				{
 					"name": "rpx2px",
 					"match": "([0-9]{1,})rpx",
@@ -103,7 +154,7 @@
 					"description": "rpx转换px"
 				}
 			],
-			"vscode-replace.setting": {
+			"jsReplace.setting": {
 				"moreParam": false,
 				"keyMap": {
 					"result": "__inner_res__",
