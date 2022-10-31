@@ -1,6 +1,7 @@
 {
-	"name": "jsReplace",
-	"displayName": "jsReplace",
+	"publisher": "jackiotyu",
+	"name": "js-replace",
+	"displayName": "js-replace",
 	"description": "替换匹配的内容，可以使用js语句",
 	"version": "0.0.1",
 	"icon": "images/icon.png",
@@ -9,7 +10,7 @@
 		"url": "https://github.com/jackiotyu/vscode-replace.git"
 	},
 	"bugs": {
-		"url": "https://github.com/jackiotyu/vscode-replace/issues"
+		"url": "https://github.com/jackiotyu/js-replace/issues"
 	},
 	"engines": {
 		"vscode": "^1.72.0"
@@ -35,7 +36,7 @@
 		"commands": [
 			{
 				"command": "jsReplace.replace",
-				"title": "🔃JSReplace"
+				"title": "JSReplace"
 			}
 		],
 		"configuration": {
@@ -61,7 +62,7 @@
 							},
 							"replace": {
 								"type": "string",
-								"description": "匹配后的文本，$1表示匹配到的第一个字符",
+								"description": "匹配后的文本，$1表示匹配到的第一个分组内容，$_表示匹配的子串",
 								"default": "`${($1 / 2)}px`"
 							},
 							"description": {
@@ -99,7 +100,6 @@
 				}
 			],
 			"jsReplace.setting": {
-				"moreParam": false,
 				"match": "$_",
 				"prefix": "$"
 			}

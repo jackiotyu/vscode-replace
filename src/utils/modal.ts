@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import * as vscode from 'vscode';
 import { Disposable } from 'vscode';
 import { getCommands } from './setting';

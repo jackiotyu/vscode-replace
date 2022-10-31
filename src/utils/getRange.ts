@@ -60,11 +60,7 @@ export function getMatchRangeList(activeEditor: vscode.TextEditor, command: Repl
                 let { line, start, end, group, text } = item;
                 // 文字开始和结束范围
                 let range = new vscode.Range(new vscode.Position(line, start), new vscode.Position(line, end));
-                return {
-                    group,
-                    text,
-                    range,
-                };
+                return { group, text, range };
             });
         }
         return rangeList;
