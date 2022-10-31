@@ -106,6 +106,7 @@
 		}
 	},
 	"scripts": {
+		"pub": "vsce publish --pre-release",
 		"vscode:prepublish": "yarn run package",
 		"compile": "webpack",
 		"watch": "webpack --watch",
