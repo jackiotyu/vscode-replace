@@ -11,6 +11,6 @@ export enum DefaultSetting {
     // 被匹配的原字符串
     // ORIGIN_TEXT_KEY = '__origin_text__',
     // 匹配的子串
-    MATCH_KEY = '$&',
+    MATCH_KEY = '$_',
     PREFIX_KEY = '$',
 }

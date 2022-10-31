@@ -77,7 +77,7 @@
 					"properties": {
 						"match": {
 							"type": "string",
-							"default": "$&",
+							"default": "$_",
 							"description": "匹配的子串"
 						},
 						"prefix": {
@@ -100,7 +100,7 @@
 			],
 			"jsReplace.setting": {
 				"moreParam": false,
-				"match": "$&",
+				"match": "$_",
 				"prefix": "$"
 			}
 		}

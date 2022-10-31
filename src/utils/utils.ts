@@ -11,3 +11,12 @@ export function isUndefined(command: any): command is undefined {
     }
     return false;
 }
+
+export function isReg(reg: string): boolean {
+    try {
+        RegExp(reg, 'g');
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
