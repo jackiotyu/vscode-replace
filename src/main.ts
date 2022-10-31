@@ -43,37 +43,10 @@ function getReplaceText(command: ReplaceCommand, text: string, ...args: any[]) {
         paramMap[keyMap?.offset || DefaultSetting.OFFSET_KEY] = offset;
         paramMap[keyMap?.originText || DefaultSetting.ORIGIN_TEXT_KEY] = originText;
     }
-    // TODO 判断是否为js表达式
 
     // 使用vm模块运行replace内容，获取运行结果
     let context = vm.createContext(paramMap);
     return vm.runInContext(replace || '""', context);
-}
-
-/**
- * 替换编辑器文本
- * @param activeEditor 当前激活的编辑器
- * @param text 需要替换的文本
- */
-function handleReplace(activeEditor: vscode.TextEditor, text: string) {
-    var firstLine = activeEditor.document.lineAt(0);
-    var lastLine = activeEditor.document.lineAt(activeEditor.document.lineCount - 1);
-    var textRange = new vscode.Range(
-        0,
-        firstLine.range.start.character,
-        activeEditor.document.lineCount - 1,
-        lastLine.range.end.character,
-    );
-
-    activeEditor.edit(
-        (builder) => {
-            builder.replace(textRange, text);
-        },
-        {
-            undoStopAfter: false,
-            undoStopBefore: false,
-        },
-    );
 }
 
 /**
@@ -97,6 +70,7 @@ function getMatchRangeList(activeEditor: vscode.TextEditor, command: ReplaceComm
 }
 
 function restoreText(activeEditor: vscode.TextEditor, contentList: Replace.replaceRangeWithContent[]) {
+    cancelDecoration();
     return activeEditor.edit(
         (builder) => {
             contentList.forEach((item, index) => {
@@ -117,14 +91,8 @@ async function markChange(
     contentList: Replace.replaceRangeWithContent[],
     command: ReplaceCommand,
 ) {
-    console.log('validateInput', value);
     command.replace = value;
     let errorInfo = null;
-    cancelDecoration();
-    // 恢复文本
-    console.log('恢复文本');
-    await restoreText(activeEditor, contentList);
-
     let lastOldRange = new vscode.Range(0, 0, 0, 0);
     let lastNewRange = new vscode.Range(0, 0, 0, 0);
     let totalLineIncrease = 0;
@@ -132,13 +100,13 @@ async function markChange(
     let replaceOperationList: { range: vscode.Range; text: string }[] = [];
 
     contentList.some((item, index) => {
-        let { originContent, originRange, previewRange } = item;
+        let { originContent, previewRange } = item;
         try {
+            // FIXME 优化替换
             originContent.replace(new RegExp(command.match), (text, ...args) => {
                 let replaceText = getReplaceText(command, text, ...args);
-                console.log(replaceText, 'replaceText builder run', originRange, previewRange);
-                replaceOperationList.push({ text: replaceText, range: originRange });
-                const oldRange = originRange;
+                replaceOperationList.push({ text: replaceText, range: previewRange });
+                const oldRange = previewRange;
                 const expandedTextLines = replaceText.split('\n');
                 const oldLine = oldRange.end.line - oldRange.start.line + 1;
                 const lineIncrease = expandedTextLines.length - oldLine;
@@ -154,7 +122,6 @@ async function markChange(
                 } else if (index > 0 && newStartLine === lastNewRange.end.line) {
                     newStart = lastNewRange.end.character + (oldRange.start.character - lastOldRange.end.character);
                 } else if (expandedTextLines.length === 1) {
-                    // If the expandedText is single line, add the length of preceeding text as it will not be included in line length.
                     newEnd += oldRange.start.character;
                 }
 
@@ -184,7 +151,6 @@ async function markChange(
     }
 
     if (errorInfo) {
-        cancelDecoration();
         await restoreText(activeEditor, contentList);
     } else {
         setMatchTextHighlight(
@@ -193,6 +159,19 @@ async function markChange(
         );
     }
     return errorInfo;
+}
+
+function getContentList(
+    activeEditor: vscode.TextEditor,
+    rangeList: Replace.RangeList,
+): Replace.replaceRangeWithContent[] {
+    return rangeList.map((range) => {
+        return {
+            originContent: activeEditor.document.getText(range),
+            originRange: range,
+            previewRange: range,
+        };
+    });
 }
 
 async function transform(activeEditor: vscode.TextEditor) {
@@ -211,59 +190,50 @@ async function transform(activeEditor: vscode.TextEditor) {
             value: command.match,
             validateInput(value) {
                 command.match = value;
-                cancelDecoration();
                 rangeList = getMatchRangeList(activeEditor, command);
                 setMatchTextHighlight(activeEditor, rangeList);
                 return null;
             },
         });
 
-        let contentList: Replace.replaceRangeWithContent[] = rangeList.map((range) => {
-            return {
-                originContent: activeEditor.document.getText(range),
-                originRange: range,
-                previewRange: range,
-            };
-        });
+        let contentList = getContentList(activeEditor, rangeList);
 
-        let promise = Promise.resolve();
-
-        // TODO 实现修改预览
-        await vscode.window.showInputBox({
+        // 实现修改预览
+        let res = await vscode.window.showInputBox({
             title: '输入替换文本的正则表达式',
             placeHolder: '请输入js表达式',
             value: command.replace,
             async validateInput(value) {
-                return promise.then(() => {
-                    return markChange(value, activeEditor, contentList, command);
-                });
+                return markChange(value, activeEditor, contentList, command);
             },
         });
+        if (!res) {
+            restoreText(activeEditor, contentList);
+        }
         cancelDecoration();
     } else {
-        command = selectCommand;
+        command = { ...selectCommand };
         rangeList = getMatchRangeList(activeEditor, command);
-        setMatchTextHighlight(activeEditor, rangeList);
-        let result = '';
+        let contentList = getContentList(activeEditor, rangeList);
         try {
-            let doc = activeEditor.document.getText();
-            result = doc.replace(new RegExp(command.match, 'g'), (text, ...args) => {
-                return getReplaceText(command as ReplaceCommand, text, ...args);
-            });
+            let errorInfo = await markChange(command.replace, activeEditor, contentList, command);
+            if (errorInfo) {
+                throw new Error(errorInfo);
+            }
         } catch (error: any) {
             console.error(error);
             vscode.window.showWarningMessage(
                 `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误`,
             );
+            restoreText(activeEditor, contentList);
             return;
         }
-        // TODO 确认替换
+        // 确认替换
         let pickOptions = ['确认', '取消'];
-
         let confirm = await vscode.window.showInformationMessage('确认替换？', ...pickOptions);
         cancelMatchTextHighlight(rangeList);
-        if (confirm === pickOptions[0]) {
-            handleReplace(activeEditor, result);
+        if (confirm === pickOptions[1]) {
+            restoreText(activeEditor, contentList);
         }
     }
 }
