@@ -32,41 +32,6 @@
 				}
 			]
 		},
-		"viewsWelcome": [
-			{
-				"view": "ReplaceExplorer",
-				"when": "workbenchState == empty"
-			}
-		],
-		"views": {
-			"ReplaceExplorer": [
-				{
-					"id": "OptionView",
-					"name": "选项"
-				},
-				{
-					"id": "MatchView",
-					"name": "匹配区"
-				},
-				{
-					"id": "ReplaceView",
-					"name": "替换区"
-				},
-				{
-					"id": "ResultView",
-					"name": "结果区"
-				}
-			]
-		},
-		"menus": {
-			"view/title": [
-				{
-					"command": "jsReplace.replace",
-					"when": "view == jsReplace",
-					"group": "navigation"
-				}
-			]
-		},
 		"commands": [
 			{
 				"command": "jsReplace.replace",
@@ -108,33 +73,17 @@
 				},
 				"jsReplace.setting": {
 					"type": "object",
-					"description": "replace设置",
+					"description": "replace设置, 配置更多参数的变量名映射和$1到$n前缀自定义",
 					"properties": {
-						"moreParam": {
-							"type": "boolean",
-							"description": "开启更多参数，打开后可获取到$&、__offset__等",
-							"default": false
+						"match": {
+							"type": "string",
+							"default": "$&",
+							"description": "匹配的子串"
 						},
-						"keyMap": {
-							"type": "object",
-							"description": "配置更多参数的变量名映射，目前所有参数为：\n__inner_res__、__offset__、__origin_text__、$&，\n如需要替换的文本中有重名，请替换该变量名，防止运行失败",
-							"properties": {
-								"offset": {
-									"type": "string",
-									"default": "__offset__",
-									"description": "匹配到的子字符串在原字符串中的偏移量。（比如，如果原字符串是 'abcd'，匹配到的子字符串是 'bc'，那么这个参数将会是 1）"
-								},
-								"originText": {
-									"type": "string",
-									"default": "__origin_text__",
-									"description": "被匹配的原字符串"
-								},
-								"match": {
-									"type": "string",
-									"default": "__match__",
-									"description": "匹配的子串"
-								}
-							}
+						"prefix": {
+							"type": "string",
+							"default": "$",
+							"description": "匹配到分组变量的前缀，设置为$，则变量为$1到$n"
 						}
 					}
 				}
@@ -151,12 +100,8 @@
 			],
 			"jsReplace.setting": {
 				"moreParam": false,
-				"keyMap": {
-					"result": "__inner_res__",
-					"offset": "__offset__",
-					"originText": "__origin_text__",
-					"match": "$&"
-				}
+				"match": "$&",
+				"prefix": "$"
 			}
 		}
 	},

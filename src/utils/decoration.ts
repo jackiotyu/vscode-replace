@@ -19,7 +19,7 @@ export const cancelDecoration = () => {
  * @param activeEditor
  * @param command
  */
-export function setMatchTextHighlight(activeEditor: vscode.TextEditor, rangeList: Replace.RangeList) {
+export function setMatchTextHighlight(activeEditor: vscode.TextEditor, rangeList: vscode.Range[]) {
     if (rangeList.length) {
         let decorationType = getDecoration();
         activeEditor.setDecorations(decorationType, rangeList);

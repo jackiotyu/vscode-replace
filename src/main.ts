@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as vm from 'vm';
 import { getAllPosition } from './utils/getRange';
-import { cancelMatchTextHighlight, setMatchTextHighlight, cancelDecoration } from './utils/decoration';
+import { setMatchTextHighlight, cancelDecoration } from './utils/decoration';
 import { getSetting } from './utils/setting';
 import { pickCommand } from './utils/modal';
 import { isPickCommand, isUndefined } from './utils/utils';
@@ -20,29 +20,23 @@ async function getCommand() {
  * @param args
  * @returns
  */
-function getReplaceText(command: ReplaceCommand, text: string, ...args: any[]) {
+function getReplaceText(command: ReplaceCommand, text: string, ...args: string[]) {
     const { replace } = command;
 
     if (replace === '' || replace === undefined) {
         throw new Error('请输入替换的js表达式');
     }
 
-    const { moreParam, keyMap } = getSetting();
+    const { prefix, match } = getSetting();
 
-    let argGroup = args.slice(0, -2);
-    let offset = args[args.length - 2];
-    let originText = args[args.length - 1];
-    let paramMap: Record<string, string> = argGroup.reduce((map, item, index) => {
-        map[`$${index + 1}`] = item;
-        return map;
-    }, {});
+    let prefixKey = prefix || DefaultSetting.PREFIX_KEY;
+    let paramMap: Record<string, string> = {
+        [match || DefaultSetting.MATCH_KEY]: text,
+    };
 
-    // 开启更多参数
-    if (moreParam) {
-        paramMap[keyMap?.match || DefaultSetting.MATCH_KEY] = text;
-        paramMap[keyMap?.offset || DefaultSetting.OFFSET_KEY] = offset;
-        paramMap[keyMap?.originText || DefaultSetting.ORIGIN_TEXT_KEY] = originText;
-    }
+    args.forEach((item, index) => {
+        paramMap[`${prefixKey}${index + 1}`] = item;
+    });
 
     // 使用vm模块运行replace内容，获取运行结果
     let context = vm.createContext(paramMap);
@@ -57,13 +51,18 @@ function getReplaceText(command: ReplaceCommand, text: string, ...args: any[]) {
  */
 function getMatchRangeList(activeEditor: vscode.TextEditor, command: ReplaceCommand) {
     let positionArray = getAllPosition(activeEditor, command.match);
-    let rangeList: vscode.Range[] = [];
+    console.log('positionArray', positionArray);
+    let rangeList: Replace.RangeList = [];
     if (positionArray.length) {
         rangeList = positionArray.map((item) => {
-            let { line, start, end } = item;
+            let { line, start, end, group, text } = item;
             // 文字开始和结束范围
             let range = new vscode.Range(new vscode.Position(line, start), new vscode.Position(line, end));
-            return range;
+            return {
+                group,
+                text,
+                range,
+            };
         });
     }
     return rangeList;
@@ -100,38 +99,34 @@ async function markChange(
     let replaceOperationList: { range: vscode.Range; text: string }[] = [];
 
     contentList.some((item, index) => {
-        let { originContent, previewRange } = item;
+        let { originContent, previewRange, group } = item;
         try {
             // FIXME 优化替换
-            originContent.replace(new RegExp(command.match), (text, ...args) => {
-                let replaceText = getReplaceText(command, text, ...args);
-                replaceOperationList.push({ text: replaceText, range: previewRange });
-                const oldRange = previewRange;
-                const expandedTextLines = replaceText.split('\n');
-                const oldLine = oldRange.end.line - oldRange.start.line + 1;
-                const lineIncrease = expandedTextLines.length - oldLine;
+            let replaceText = getReplaceText(command, originContent, ...group);
+            replaceOperationList.push({ text: replaceText, range: previewRange });
+            const oldRange = previewRange;
+            const expandedTextLines = replaceText.split('\n');
+            const oldLine = oldRange.end.line - oldRange.start.line + 1;
+            const lineIncrease = expandedTextLines.length - oldLine;
 
-                let newStartLine = oldRange.start.line + totalLineIncrease;
-                let newStart = oldRange.start.character;
-                const newEndLine = oldRange.end.line + totalLineIncrease + lineIncrease;
+            let newStartLine = oldRange.start.line + totalLineIncrease;
+            let newStart = oldRange.start.character;
+            const newEndLine = oldRange.end.line + totalLineIncrease + lineIncrease;
 
-                let newEnd = expandedTextLines[expandedTextLines.length - 1].length;
-                if (index > 0 && newEndLine === lastNewRange.end.line) {
-                    newStart = lastNewRange.end.character + (oldRange.start.character - lastOldRange.end.character);
-                    newEnd += newStart;
-                } else if (index > 0 && newStartLine === lastNewRange.end.line) {
-                    newStart = lastNewRange.end.character + (oldRange.start.character - lastOldRange.end.character);
-                } else if (expandedTextLines.length === 1) {
-                    newEnd += oldRange.start.character;
-                }
+            let newEnd = expandedTextLines[expandedTextLines.length - 1].length;
+            if (index > 0 && newEndLine === lastNewRange.end.line) {
+                newStart = lastNewRange.end.character + (oldRange.start.character - lastOldRange.end.character);
+                newEnd += newStart;
+            } else if (index > 0 && newStartLine === lastNewRange.end.line) {
+                newStart = lastNewRange.end.character + (oldRange.start.character - lastOldRange.end.character);
+            } else if (expandedTextLines.length === 1) {
+                newEnd += oldRange.start.character;
+            }
 
-                lastOldRange = item.previewRange;
-                item.previewRange = lastNewRange = new vscode.Range(newStartLine, newStart, newEndLine, newEnd);
+            lastOldRange = item.previewRange;
+            item.previewRange = lastNewRange = new vscode.Range(newStartLine, newStart, newEndLine, newEnd);
 
-                totalLineIncrease += lineIncrease;
-
-                return replaceText;
-            });
+            totalLineIncrease += lineIncrease;
         } catch (error) {
             console.log(error, 'error');
             return (errorInfo = error);
@@ -161,15 +156,13 @@ async function markChange(
     return errorInfo;
 }
 
-function getContentList(
-    activeEditor: vscode.TextEditor,
-    rangeList: Replace.RangeList,
-): Replace.replaceRangeWithContent[] {
-    return rangeList.map((range) => {
+function getContentList(rangeList: Replace.RangeList): Replace.replaceRangeWithContent[] {
+    return rangeList.map(({ range, group, text }) => {
         return {
-            originContent: activeEditor.document.getText(range),
+            originContent: text,
             originRange: range,
             previewRange: range,
+            group,
         };
     });
 }
@@ -184,25 +177,39 @@ async function transform(activeEditor: vscode.TextEditor) {
     if (isPickCommand(selectCommand)) {
         // TODO 修改处理
         command = { ...selectCommand.command };
-        await vscode.window.showInputBox({
+        let matched = await vscode.window.showInputBox({
             title: '输入匹配文本的正则表达式',
             placeHolder: '请输入正则表达式',
             value: command.match,
+            prompt: '不需要加上前后的/，例如：[0-9]+ 代表 /[0-9]+/g',
             validateInput(value) {
                 command.match = value;
+                cancelDecoration();
                 rangeList = getMatchRangeList(activeEditor, command);
-                setMatchTextHighlight(activeEditor, rangeList);
+                console.log(rangeList, 'rangeList');
+                if (!rangeList.length) {
+                    return '未匹配到替换内容';
+                }
+                setMatchTextHighlight(
+                    activeEditor,
+                    rangeList.map((i) => i.range),
+                );
                 return null;
             },
         });
 
-        let contentList = getContentList(activeEditor, rangeList);
+        if (!matched) {
+            return;
+        }
+
+        let contentList = getContentList(rangeList);
 
         // 实现修改预览
         let res = await vscode.window.showInputBox({
             title: '输入替换文本的正则表达式',
             placeHolder: '请输入js表达式',
             value: command.replace,
+            prompt: '例如：`${$1 + 2}`',
             async validateInput(value) {
                 return markChange(value, activeEditor, contentList, command);
             },
@@ -214,7 +221,12 @@ async function transform(activeEditor: vscode.TextEditor) {
     } else {
         command = { ...selectCommand };
         rangeList = getMatchRangeList(activeEditor, command);
-        let contentList = getContentList(activeEditor, rangeList);
+        if (!rangeList.length) {
+            vscode.window.showWarningMessage(`${Command.EXTENSION_NAME}: 未匹配到替换内容`);
+            return;
+        }
+        let contentList = getContentList(rangeList);
+
         try {
             let errorInfo = await markChange(command.replace, activeEditor, contentList, command);
             if (errorInfo) {
@@ -223,7 +235,7 @@ async function transform(activeEditor: vscode.TextEditor) {
         } catch (error: any) {
             console.error(error);
             vscode.window.showWarningMessage(
-                `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误`,
+                `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误\n${error}`,
             );
             restoreText(activeEditor, contentList);
             return;
@@ -231,7 +243,7 @@ async function transform(activeEditor: vscode.TextEditor) {
         // 确认替换
         let pickOptions = ['确认', '取消'];
         let confirm = await vscode.window.showInformationMessage('确认替换？', ...pickOptions);
-        cancelMatchTextHighlight(rangeList);
+        cancelDecoration();
         if (confirm === pickOptions[1]) {
             restoreText(activeEditor, contentList);
         }

@@ -9,8 +9,10 @@ interface ReplaceCommand {
 
 interface ReplaceSetting {
     // 开启更多参数
-    moreParam?: boolean;
-    keyMap?: KeyMap;
+    // moreParam?: boolean;
+    // keyMap?: KeyMap;
+    match?: string;
+    prefix?: string;
 }
 
 type vscode = typeof import('vscode');

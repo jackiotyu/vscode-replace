@@ -8,6 +8,9 @@ export function getRange(text: string, reg: string) {
         res.push({
             start: matchGroup.index,
             end: matchGroup.index + matchText.length,
+            // 获取$1-$n
+            group: matchGroup.slice(1),
+            text: matchText,
         });
     }
     return res;

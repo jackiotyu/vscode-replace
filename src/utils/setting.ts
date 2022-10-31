@@ -2,12 +2,13 @@ import * as vscode from 'vscode';
 import { DefaultSetting, Command } from '../constants';
 
 const DEFAULT_SETTING = {
-    moreParam: false,
-    keyMap: {
-        offset: DefaultSetting.OFFSET_KEY,
-        originText: DefaultSetting.ORIGIN_TEXT_KEY,
-        match: DefaultSetting.MATCH_KEY,
-    },
+    match: DefaultSetting.MATCH_KEY,
+    prefix: DefaultSetting.PREFIX_KEY,
+    // moreParam: false,
+    // keyMap: {
+    //     // offset: DefaultSetting.OFFSET_KEY,
+    //     // originText: DefaultSetting.ORIGIN_TEXT_KEY,
+    // },
 };
 
 export function getSetting(): ReplaceSetting {
