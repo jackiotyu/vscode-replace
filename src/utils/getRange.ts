@@ -40,7 +40,7 @@ export function getAllPosition(editor: vscode.TextEditor, reg: string) {
         }
         return positionArray;
     } catch (error) {
-        console.log(error, 'error');
+        // console.log(error, 'error');
         return [];
     }
 }
@@ -65,7 +65,7 @@ export function getMatchRangeList(activeEditor: vscode.TextEditor, command: Repl
         }
         return rangeList;
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return [];
     }
 }

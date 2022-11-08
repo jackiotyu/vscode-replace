@@ -24,6 +24,7 @@
     "transform.error.unmatch": "未匹配到替换内容",
     "transform.error.analysisJs": "{0}: 解析出错了！\n请检查命令 \"{1}\" 语法是否有错误\n{2}",
     "transform.action.replace.confirm": "确认替换？",
+    "replace.error.notString": "请返回字符串",
     "getReplaceText.required": "请输入替换的js表达式",
     "modal.pickCommand.tooltip": "修改参数",
     "common.action.confirm": "确认",

@@ -23,6 +23,7 @@
     "transform.replace.input.prompt": "For example: `${$1 + 2}`",
     "transform.error.unmatch": "Replacement content is not matched",
     "transform.error.analysisJs": "{0}: Parsing error!\nPlease check the command \"{1}\" syntax for errors\n{2}",
+    "replace.error.notString": "Please return a string",
     "transform.action.replace.confirm": "Confirm the replacement?",
     "getReplaceText.required": "Please enter the js expression for the substitution",
     "modal.pickCommand.tooltip": "Modify the parameters",

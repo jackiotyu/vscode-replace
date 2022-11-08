@@ -40,19 +40,21 @@ async function transform(activeEditor: vscode.TextEditor) {
             value: command.match,
             prompt: localize('transform.match.input.prompt'),
             validateInput(value) {
-                command.match = value;
-                cancelDecoration();
-                console.log(value, 'value');
-                rangeList = getMatchRangeList(activeEditor, command);
-                console.log(rangeList, 'rangeList');
-                if (!rangeList.length) {
-                    return localize('transform.error.unmatch');
+                try {
+                    command.match = value;
+                    cancelDecoration();
+                    rangeList = getMatchRangeList(activeEditor, command);
+                    if (!rangeList.length) {
+                        return localize('transform.error.unmatch');
+                    }
+                    setMatchTextHighlight(
+                        activeEditor,
+                        rangeList.map((i) => i.range),
+                    );
+                    return null;
+                } catch (error: any) {
+                    return error?.message;
                 }
-                setMatchTextHighlight(
-                    activeEditor,
-                    rangeList.map((i) => i.range),
-                );
-                return null;
             },
         });
 
@@ -92,7 +94,7 @@ async function transform(activeEditor: vscode.TextEditor) {
                 throw new Error(errorInfo);
             }
         } catch (error: any) {
-            console.error(error);
+            // console.error(error);
             vscode.window.showWarningMessage(
                 localize('transform.error.analysisJs', Command.EXTENSION_NAME, command.name, error),
                 // `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误\n${error}`,

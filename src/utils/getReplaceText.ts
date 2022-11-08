@@ -73,6 +73,9 @@ export async function markChange(
         try {
             // FIXME 优化替换
             let replaceText = getReplaceText(command, originContent, ...group);
+            if (typeof replaceText !== 'string') {
+                throw new SyntaxError(localize('replace.error.notString'));
+            }
             replaceOperationList.push({ text: replaceText, range: previewRange });
             const oldRange = previewRange;
             const expandedTextLines = replaceText.split('\n');
@@ -98,7 +101,7 @@ export async function markChange(
 
             totalLineIncrease += lineIncrease;
         } catch (error) {
-            console.warn(error, 'error');
+            // console.warn(error, 'error');
             return (errorInfo = error);
         }
         return false;
