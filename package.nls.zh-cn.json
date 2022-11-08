@@ -12,6 +12,8 @@
     "ext.config.setting.prefix": "匹配到分组变量的前缀，设置为$，则变量为$1到$n",
     "ext.config.setting.actionLanguages": "将命令注册到code action中",
     "ext.config.setting.actionLanguages.items": "支持的语言，例如：typescript",
+    "ext.config.setting.actionIgnoreCommands": "code action需要忽略的命令，填写jsReplace.commands中定义的\"name\"字段",
+    "ext.config.setting.actionIgnoreCommands.items": "jsReplace.commands中定义的\"name\"",
     "transform.match.input.title": "输入匹配文本的正则表达式",
     "transform.match.input.placeHolder": "请输入正则表达式",
     "transform.match.input.prompt": "不需要加上前后的/，例如：[0-9]+ 代表 /[0-9]+/g",

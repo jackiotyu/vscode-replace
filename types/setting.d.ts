@@ -14,6 +14,7 @@ interface ReplaceSetting {
     match?: string;
     prefix?: string;
     actionLanguages?: string[];
+    actionIgnoreCommands?: string[];
 }
 
 type vscode = typeof import('vscode');

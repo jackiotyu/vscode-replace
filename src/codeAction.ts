@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { TextDocument, Range, Selection, CodeActionContext, CancellationToken } from 'vscode';
 import { Command } from './constants';
-import { getCommands, getSetting } from './utils/setting';
+import { getCommands, getSetting, getActionCommands } from './utils/setting';
 import { getReplaceText } from './utils/getReplaceText';
 
 class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
@@ -13,10 +13,12 @@ class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
         context: CodeActionContext,
         token: CancellationToken,
     ) {
-        let commands = getCommands();
-        if (!commands) return [];
+        let commands = getActionCommands();
+        if (!commands?.length) return [];
         let actionCommands = commands.map((command) => {
-            let action = new vscode.CodeAction(`jsReplace => ${command.name}`, vscode.CodeActionKind.QuickFix);
+            let name = command.name;
+            let description = command.description ? ` (${command.description})` : '';
+            let action = new vscode.CodeAction(`jsReplace ${name}${description}`, vscode.CodeActionKind.QuickFix);
             action.edit = new vscode.WorkspaceEdit();
             let activeEditor = vscode.window.activeTextEditor;
             if (activeEditor) {
@@ -57,8 +59,10 @@ class RegisterCodeAction {
     // 检查配置
     checkRegister(context: vscode.ExtensionContext) {
         let supportLanguageList = getSetting().actionLanguages;
+        let commands = getActionCommands();
         this.disposeAction();
         if (!supportLanguageList?.length) return;
+        if (!commands?.length) return;
         this.registerAction(context, supportLanguageList);
     }
 

@@ -4,6 +4,7 @@ import { getSetting } from './setting';
 import { DefaultSetting } from '../constants';
 import { cancelDecoration, setMatchTextHighlight } from './decoration';
 import localize from '../localize';
+import * as ChangeCase from 'change-case';
 
 /**
  * 获取替换后的内容
@@ -22,7 +23,7 @@ export function getReplaceText(command: ReplaceCommand, text: string, ...args: s
     const { prefix, match } = getSetting();
 
     let prefixKey = prefix || DefaultSetting.PREFIX_KEY;
-    let paramMap: Record<string, string> = {
+    let paramMap: Record<string, any> = {
         [match || DefaultSetting.MATCH_KEY]: text,
     };
 
@@ -30,9 +31,11 @@ export function getReplaceText(command: ReplaceCommand, text: string, ...args: s
         paramMap[`${prefixKey}${index + 1}`] = item;
     });
 
+    paramMap.ChangeCase = ChangeCase;
+
     // 使用vm模块运行replace内容，获取运行结果
     let context = vm.createContext(paramMap);
-    return vm.runInContext(replace || '""', context);
+    return vm.runInContext(replace || '""', context, { timeout: 6000, displayErrors: true });
 }
 
 export function restoreText(activeEditor: vscode.TextEditor, contentList: Replace.replaceRangeWithContent[]) {

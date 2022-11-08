@@ -1,15 +1,12 @@
+import exp = require('constants');
 import * as vscode from 'vscode';
 import { DefaultSetting, Command } from '../constants';
 
 const DEFAULT_SETTING = {
     match: DefaultSetting.MATCH_KEY,
     prefix: DefaultSetting.PREFIX_KEY,
-    actionLanguages: DefaultSetting.ACTION_LANGUAGE,
-    // moreParam: false,
-    // keyMap: {
-    //     // offset: DefaultSetting.OFFSET_KEY,
-    //     // originText: DefaultSetting.ORIGIN_TEXT_KEY,
-    // },
+    actionLanguages: DefaultSetting.ACTION_LANGUAGES,
+    actionIgnoreCommands: DefaultSetting.NONE,
 };
 
 export function getSetting(): ReplaceSetting {
@@ -23,4 +20,10 @@ export function getCommands() {
         return;
     }
     return group;
+}
+
+export function getActionCommands() {
+    let actionIgnoreCommands = getSetting().actionIgnoreCommands || [];
+    let commands = getCommands()?.filter((i) => !actionIgnoreCommands?.includes(i.name));
+    return commands;
 }

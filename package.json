@@ -3,7 +3,7 @@
 	"name": "js-replace",
 	"displayName": "js replace",
 	"description": "使用js语句替换匹配的内容(Replace the matching content with a JS statement)",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
@@ -21,7 +21,10 @@
 	],
 	"keywords": [
 		"replace",
-		"js expression"
+		"js expression",
+		"rpx2px",
+		"rpx to px",
+		"change case"
 	],
 	"activationEvents": [
 		"onStartupFinished",
@@ -93,11 +96,35 @@
 						},
 						"actionLanguages": {
 							"type": "array",
-							"default": [],
+							"default": [
+								"javascript",
+								"typescript",
+								"html",
+								"css",
+								"less",
+								"typescriptreact",
+								"scss",
+								"python",
+								"markdown",
+								"json",
+								"javascriptreact",
+								"sass",
+								"go",
+								"c"
+							],
 							"description": "%ext.config.setting.actionLanguages%",
 							"items": {
 								"type": "string",
 								"description": "%ext.config.setting.actionLanguages.items%"
+							}
+						},
+						"actionIgnoreCommands": {
+							"type": "array",
+							"default": [],
+							"description": "%ext.config.setting.actionIgnoreCommands%",
+							"items": {
+								"type": "string",
+								"description": "%ext.config.setting.actionIgnoreCommands.items%"
 							}
 						}
 					}
@@ -111,12 +138,34 @@
 					"match": "([0-9]{1,})rpx",
 					"replace": "`${($1 / 2)}px`",
 					"description": "rpx to px"
+				},
+				{
+					"name": "pascalCase",
+					"match": "\\w{1,}",
+					"replace": "ChangeCase.pascalCase($_)",
+					"description": "AaBb"
 				}
 			],
 			"jsReplace.setting": {
 				"match": "$_",
 				"prefix": "$",
-				"actionLanguages": []
+				"actionLanguages": [
+					"javascript",
+					"typescript",
+					"html",
+					"css",
+					"less",
+					"typescriptreact",
+					"scss",
+					"python",
+					"markdown",
+					"json",
+					"javascriptreact",
+					"sass",
+					"go",
+					"c"
+				],
+				"actionIgnoreCommands": []
 			}
 		}
 	},
@@ -150,7 +199,9 @@
 		"webpack-cli": "^4.9.2"
 	},
 	"dependencies": {
+		"@types/change-case": "^2.3.1",
 		"@types/fs-extra": "^9.0.13",
+		"change-case": "^4.1.2",
 		"fs-extra": "^10.1.0"
 	}
 }
