@@ -2,8 +2,8 @@
 	"publisher": "jackiotyu",
 	"name": "js-replace",
 	"displayName": "js replace",
-	"description": "%ext.description%",
-	"version": "0.0.4",
+	"description": "使用js语句替换匹配的内容(Replace the matching content with a JS statement)",
+	"version": "0.0.5",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",

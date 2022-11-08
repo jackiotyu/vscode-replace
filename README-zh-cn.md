@@ -38,7 +38,11 @@
         // 匹配的子串变量
         "match": "$_",
         // "匹配到分组变量的前缀，设置为$，则变量为$1到$n
-        "prefix": "$"
+        "prefix": "$",
+        // 将命令注册到code action中
+        "actionLanguages": [
+            // 例如："javascript", "typescript", ...
+        ]
     }
 }
 ```

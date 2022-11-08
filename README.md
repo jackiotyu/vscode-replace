@@ -39,7 +39,11 @@ match text and transform with JavaScript expression
         // Matching substrings
         "match": "$_",
         // If the prefix matches the grouping variable, set to $, the variable is $1 to $n
-        "prefix": "$"
+        "prefix": "$",
+        // Register the command with the code action
+        "actionLanguages": [
+            // "javascript", "typescript", and more ...
+        ]
     }
 }
 ```
