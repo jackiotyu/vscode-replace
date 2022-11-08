@@ -3,7 +3,7 @@
 	"name": "js-replace",
 	"displayName": "js replace",
 	"description": "%ext.description%",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
@@ -16,7 +16,12 @@
 		"vscode": "^1.72.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Formatters"
+	],
+	"keywords": [
+		"replace",
+		"js expression"
 	],
 	"activationEvents": [
 		"onStartupFinished",
@@ -85,6 +90,15 @@
 							"type": "string",
 							"default": "$",
 							"description": "%ext.config.setting.prefix%"
+						},
+						"actionLanguages": {
+							"type": "array",
+							"default": [],
+							"description": "%ext.config.setting.actionLanguages%",
+							"items": {
+								"type": "string",
+								"description": "%ext.config.setting.actionLanguages.items%"
+							}
 						}
 					}
 				}
@@ -101,7 +115,8 @@
 			],
 			"jsReplace.setting": {
 				"match": "$_",
-				"prefix": "$"
+				"prefix": "$",
+				"actionLanguages": []
 			}
 		}
 	},

@@ -4,6 +4,7 @@ import { DefaultSetting, Command } from '../constants';
 const DEFAULT_SETTING = {
     match: DefaultSetting.MATCH_KEY,
     prefix: DefaultSetting.PREFIX_KEY,
+    actionLanguages: DefaultSetting.ACTION_LANGUAGE,
     // moreParam: false,
     // keyMap: {
     //     // offset: DefaultSetting.OFFSET_KEY,

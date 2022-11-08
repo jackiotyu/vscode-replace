@@ -8,7 +8,13 @@
 
 ## 示例
 
+#### 1. 使用命令
+
 ![example](images/example.gif)
+
+#### 2. 使用 code action
+
+![example2](images/example2.gif)
 
 ## 参数说明
 

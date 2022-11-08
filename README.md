@@ -8,7 +8,13 @@ match text and transform with JavaScript expression
 
 ## Example
 
+#### 1. use command
+
 ![example](images/example.gif)
+
+#### 2. use code action
+
+![example2](images/example2.gif)
 
 ## Parameter description
 

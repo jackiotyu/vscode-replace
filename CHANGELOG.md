@@ -4,7 +4,13 @@ All notable changes to the "vscode-replace" extension will be documented in this
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.1.0] - 2022-11-08
+## [0.0.4] - 2022-11-08
+
+### Added
+
+-   Added Code Action Support
+
+## [0.0.3] - 2022-11-08
 
 ### Added
 

@@ -13,6 +13,7 @@ interface ReplaceSetting {
     // keyMap?: KeyMap;
     match?: string;
     prefix?: string;
+    actionLanguages?: string[];
 }
 
 type vscode = typeof import('vscode');

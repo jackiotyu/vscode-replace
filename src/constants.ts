@@ -13,4 +13,5 @@ export enum DefaultSetting {
     // 匹配的子串
     MATCH_KEY = '$_',
     PREFIX_KEY = '$',
+    ACTION_LANGUAGE = '',
 }
