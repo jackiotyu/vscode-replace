@@ -7,6 +7,7 @@ const DEFAULT_SETTING = {
     prefix: DefaultSetting.PREFIX_KEY,
     actionLanguages: DefaultSetting.ACTION_LANGUAGES,
     actionIgnoreCommands: DefaultSetting.NONE,
+    actionFormat: DefaultSetting.ACTION_NAME_FORMAT,
 };
 
 export function getSetting(): ReplaceSetting {

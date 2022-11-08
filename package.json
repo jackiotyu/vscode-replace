@@ -126,6 +126,11 @@
 								"type": "string",
 								"description": "%ext.config.setting.actionIgnoreCommands.items%"
 							}
+						},
+						"actionNameFormat": {
+							"type": "string",
+							"default": "JSR $name ($description)",
+							"description": "%ext.config.setting.actionNameFormat%"
 						}
 					}
 				}
@@ -165,7 +170,8 @@
 					"go",
 					"c"
 				],
-				"actionIgnoreCommands": []
+				"actionIgnoreCommands": [],
+				"actionNameFormat": "jsReplace $name ($description)"
 			}
 		}
 	},

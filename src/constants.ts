@@ -30,4 +30,5 @@ export const DefaultSetting = {
         'go',
         'c',
     ],
+    ACTION_NAME_FORMAT: 'JSR $name ($description)',
 };

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { TextDocument, Range, Selection, CodeActionContext, CancellationToken } from 'vscode';
-import { Command } from './constants';
-import { getCommands, getSetting, getActionCommands } from './utils/setting';
+import { Command, DefaultSetting } from './constants';
+import { getSetting, getActionCommands } from './utils/setting';
 import { getReplaceText } from './utils/getReplaceText';
 
 class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
@@ -14,11 +14,15 @@ class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
         token: CancellationToken,
     ) {
         let commands = getActionCommands();
+        let actionNameFormat = getSetting()?.actionNameFormat || DefaultSetting.ACTION_NAME_FORMAT;
         if (!commands?.length) return [];
         let actionCommands = commands.map((command) => {
             let name = command.name;
-            let description = command.description ? ` (${command.description})` : '';
-            let action = new vscode.CodeAction(`jsReplace ${name}${description}`, vscode.CodeActionKind.QuickFix);
+            let description = command.description || '-';
+            let action = new vscode.CodeAction(
+                actionNameFormat?.replace(/\$name/, name).replace(/\$description/, description),
+                vscode.CodeActionKind.QuickFix,
+            );
             action.edit = new vscode.WorkspaceEdit();
             let activeEditor = vscode.window.activeTextEditor;
             if (activeEditor) {
