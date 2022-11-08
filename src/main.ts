@@ -5,6 +5,7 @@ import { isPickCommand, isUndefined } from './utils/utils';
 import { Command } from './constants';
 import { getMatchRangeList } from './utils/getRange';
 import { markChange, restoreText } from './utils/getReplaceText';
+import localize from './localize';
 
 // 获取需要执行的命令
 async function getCommand() {
@@ -34,10 +35,10 @@ async function transform(activeEditor: vscode.TextEditor) {
         // TODO 修改处理
         command = { ...selectCommand.command };
         let matched = await vscode.window.showInputBox({
-            title: '输入匹配文本的正则表达式',
-            placeHolder: '请输入正则表达式',
+            title: localize('transform.match.input.title'),
+            placeHolder: localize('transform.match.input.placeHolder'),
             value: command.match,
-            prompt: '不需要加上前后的/，例如：[0-9]+ 代表 /[0-9]+/g',
+            prompt: localize('transform.match.input.prompt'),
             validateInput(value) {
                 command.match = value;
                 cancelDecoration();
@@ -45,7 +46,7 @@ async function transform(activeEditor: vscode.TextEditor) {
                 rangeList = getMatchRangeList(activeEditor, command);
                 console.log(rangeList, 'rangeList');
                 if (!rangeList.length) {
-                    return '未匹配到替换内容';
+                    return localize('transform.error.unmatch');
                 }
                 setMatchTextHighlight(
                     activeEditor,
@@ -56,6 +57,7 @@ async function transform(activeEditor: vscode.TextEditor) {
         });
 
         if (!matched) {
+            cancelDecoration();
             return;
         }
 
@@ -63,10 +65,10 @@ async function transform(activeEditor: vscode.TextEditor) {
 
         // 实现修改预览
         let res = await vscode.window.showInputBox({
-            title: '输入替换文本的正则表达式',
-            placeHolder: '请输入js表达式',
+            title: localize('transform.replace.input.title'),
+            placeHolder: localize('transform.replace.input.placeHolder'),
             value: command.replace,
-            prompt: '例如：`${$1 + 2}`',
+            prompt: localize('transform.replace.input.prompt'),
             async validateInput(value) {
                 return markChange(value, activeEditor, contentList, command);
             },
@@ -79,7 +81,7 @@ async function transform(activeEditor: vscode.TextEditor) {
         command = { ...selectCommand };
         rangeList = getMatchRangeList(activeEditor, command);
         if (!rangeList.length) {
-            vscode.window.showWarningMessage(`${Command.EXTENSION_NAME}: 未匹配到替换内容`);
+            vscode.window.showWarningMessage(`${Command.EXTENSION_NAME}: ${localize('transform.error.unmatch')}`);
             return;
         }
         let contentList = getContentList(rangeList);
@@ -92,14 +94,18 @@ async function transform(activeEditor: vscode.TextEditor) {
         } catch (error: any) {
             console.error(error);
             vscode.window.showWarningMessage(
-                `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误\n${error}`,
+                localize('transform.error.analysisJs', Command.EXTENSION_NAME, command.name, error),
+                // `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误\n${error}`,
             );
             restoreText(activeEditor, contentList);
             return;
         }
         // 确认替换
-        let pickOptions = ['确认', '取消'];
-        let confirm = await vscode.window.showInformationMessage('确认替换？', ...pickOptions);
+        let pickOptions = [localize('common.action.confirm'), localize('common.action.cancel')];
+        let confirm = await vscode.window.showInformationMessage(
+            localize('transform.action.replace.confirm'),
+            ...pickOptions,
+        );
         cancelDecoration();
         if (confirm === pickOptions[1]) {
             restoreText(activeEditor, contentList);

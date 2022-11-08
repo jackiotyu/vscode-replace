@@ -1,35 +1,38 @@
-# vscode-replace
+# js-replace
+
+[中文文档](./README-zh-cn.md)
 
 ## Features
 
-对选中文本执行 js 计算
+match text and transform with JavaScript expression
 
-## 示例
+## Example
 
 ![example](images/example.gif)
 
-## 参数说明
+## Parameter description
 
 ```json
 {
-    // 注册replace命令
+    // Register the replace command
     "jsReplace.commands": [
         {
-            // 指令名称
+            // Replace command
             "name": "rpx2px",
-            // 用于匹配文字的正则表达式
+            // A regular expression used to match literals
             "match": "([0-9]{1,})rpx",
-            // 匹配后的处理，使用js表达式，
-            // $1表示匹配到的第一个分组内容，$_表示匹配的子串
+            // Processing after matching, using js expressions,
+            // $1 represents the first grouping content matched, and $_ represents the matched substring
             "replace": "`${($1 / 2)}px`",
-            // 描述
+            // Describes the command content
             "description": "rpx转换px"
         }
     ],
+    // Replace settings, configure variable name mappings for more parameters and $1 to $n prefix customization
     "jsReplace.setting": {
-        // 匹配的子串变量
+        // Matching substrings
         "match": "$_",
-        // "匹配到分组变量的前缀，设置为$，则变量为$1到$n
+        // If the prefix matches the grouping variable, set to $, the variable is $1 to $n
         "prefix": "$"
     }
 }

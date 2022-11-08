@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Disposable } from 'vscode';
 import { getCommands } from './setting';
+import localize from '../localize';
 
 export function pickCommand(): Promise<SelectCommand> {
     const disposables: Disposable[] = [];
@@ -11,7 +12,7 @@ export function pickCommand(): Promise<SelectCommand> {
         return {
             label: command.name,
             description: command.description,
-            buttons: [{ iconPath: new vscode.ThemeIcon('pencil'), tooltip: '修改参数' }],
+            buttons: [{ iconPath: new vscode.ThemeIcon('pencil'), tooltip: localize('modal.pickCommand.tooltip') }],
         };
     });
 

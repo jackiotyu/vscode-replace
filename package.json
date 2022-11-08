@@ -2,8 +2,8 @@
 	"publisher": "jackiotyu",
 	"name": "js-replace",
 	"displayName": "js replace",
-	"description": "替换匹配的内容，可以使用js语句",
-	"version": "0.0.2",
+	"description": "%ext.description%",
+	"version": "0.0.3",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
@@ -41,50 +41,50 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "jsReplace设置",
+			"title": "%ext.config.title%",
 			"properties": {
 				"jsReplace.commands": {
 					"type": "array",
 					"default": [],
-					"description": "注册replace命令",
+					"description": "%ext.config.commands%",
 					"items": {
 						"type": "object",
-						"title": "replace命令",
+						"title": "%ext.config.commands.items%",
 						"properties": {
 							"name": {
 								"type": "string",
-								"description": "命令名称"
+								"description": "%ext.config.commands.items.name%"
 							},
 							"match": {
 								"type": "string",
-								"description": "用于匹配文字的正则表达式",
+								"description": "%ext.config.commands.items.match%",
 								"default": "([0-9]{1,})rpx"
 							},
 							"replace": {
 								"type": "string",
-								"description": "匹配后的文本，$1表示匹配到的第一个分组内容，$_表示匹配的子串",
+								"description": "%ext.config.commands.items.replace%",
 								"default": "`${($1 / 2)}px`"
 							},
 							"description": {
 								"type": "string",
-								"description": "描述命令内容"
+								"description": "%ext.config.commands.items.description%"
 							}
 						}
 					}
 				},
 				"jsReplace.setting": {
 					"type": "object",
-					"description": "replace设置, 配置更多参数的变量名映射和$1到$n前缀自定义",
+					"description": "%ext.config.setting%",
 					"properties": {
 						"match": {
 							"type": "string",
 							"default": "$_",
-							"description": "匹配的子串"
+							"description": "%ext.config.setting.match%"
 						},
 						"prefix": {
 							"type": "string",
 							"default": "$",
-							"description": "匹配到分组变量的前缀，设置为$，则变量为$1到$n"
+							"description": "%ext.config.setting.prefix%"
 						}
 					}
 				}
@@ -96,7 +96,7 @@
 					"name": "rpx2px",
 					"match": "([0-9]{1,})rpx",
 					"replace": "`${($1 / 2)}px`",
-					"description": "rpx转换px"
+					"description": "rpx to px"
 				}
 			],
 			"jsReplace.setting": {
@@ -133,5 +133,9 @@
 		"typescript": "^4.7.2",
 		"webpack": "^5.72.1",
 		"webpack-cli": "^4.9.2"
+	},
+	"dependencies": {
+		"@types/fs-extra": "^9.0.13",
+		"fs-extra": "^10.1.0"
 	}
 }

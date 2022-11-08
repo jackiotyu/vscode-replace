@@ -3,6 +3,7 @@ import * as vm from 'vm';
 import { getSetting } from './setting';
 import { DefaultSetting } from '../constants';
 import { cancelDecoration, setMatchTextHighlight } from './decoration';
+import localize from '../localize';
 
 /**
  * 获取替换后的内容
@@ -15,7 +16,7 @@ export function getReplaceText(command: ReplaceCommand, text: string, ...args: s
     const { replace } = command;
 
     if (replace === '' || replace === undefined) {
-        throw new Error('请输入替换的js表达式');
+        throw new Error(localize('transform.action.replace.confirm'));
     }
 
     const { prefix, match } = getSetting();
