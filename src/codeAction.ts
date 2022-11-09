@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
-import { TextDocument, Range, Selection, CodeActionContext, CancellationToken } from 'vscode';
+import { TextDocument, TextEditor, Range, Selection, CodeActionContext, CancellationToken } from 'vscode';
 import { Command, DefaultSetting } from './constants';
 import { getSetting, getActionCommands } from './utils/setting';
+import { isUndefined } from './utils/utils';
 import { getReplaceText } from './utils/getReplaceText';
 
 class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
@@ -15,37 +16,57 @@ class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
     ) {
         let commands = getActionCommands();
         let actionNameFormat = getSetting()?.actionNameFormat || DefaultSetting.ACTION_NAME_FORMAT;
+        let activeEditor = vscode.window.activeTextEditor;
         if (!commands?.length) return [];
-        let actionCommands = commands.map((command) => {
-            let name = command.name;
-            let description = command.description || '-';
-            let action = new vscode.CodeAction(
-                actionNameFormat?.replace(/\$name/, name).replace(/\$description/, description),
-                vscode.CodeActionKind.QuickFix,
-            );
-            action.edit = new vscode.WorkspaceEdit();
-            let activeEditor = vscode.window.activeTextEditor;
-            if (activeEditor) {
-                const selections = activeEditor.selections;
-                activeEditor.edit((builder) => {
-                    for (const selection of [...selections].reverse()) {
-                        if (action.edit) {
-                            let text = document.getText(selection);
-                            let replaceText = text;
-                            try {
-                                // 获取转换后的文本
-                                replaceText = text.replace(new RegExp(command.match, 'g'), (text, ...group) => {
-                                    return getReplaceText(command, text, ...group);
-                                });
-                            } catch (error) {}
-                            action.edit?.replace(document.uri, selection, replaceText);
-                        }
-                    }
-                });
-            }
-            return action;
-        });
+        if (isUndefined(activeEditor)) return [];
+        let editor = activeEditor;
+        let selections = [...activeEditor.selections].reverse();
+        let textList = selections.map((selection) => document.getText(selection));
+        let actionCommands = commands
+            .filter((command) => {
+                // 启用条件
+                let reg = new RegExp(command.match, 'g');
+                return textList.some((text) => reg.test(text));
+            })
+            .map((command) => {
+                return this.createAction(command, editor, document, actionNameFormat, selections);
+            });
         return actionCommands;
+    }
+
+    // action配置
+    createAction(
+        command: ReplaceCommand,
+        activeEditor: TextEditor,
+        document: TextDocument,
+        actionNameFormat: string,
+        selections: Selection[],
+    ) {
+        let name = command.name;
+        let description = command.description || '-';
+        let reg = new RegExp(command.match, 'g');
+        let action = new vscode.CodeAction(
+            actionNameFormat?.replace(/\$name/, name).replace(/\$description/, description),
+            vscode.CodeActionKind.QuickFix,
+        );
+        action.edit = new vscode.WorkspaceEdit();
+
+        activeEditor.edit((builder) => {
+            for (const selection of selections) {
+                if (action.edit) {
+                    // TODO 点击单词位置，获取整个单词
+                    let text = document.getText(selection);
+                    let replaceText = text;
+                    try {
+                        // 获取转换后的文本
+                        replaceText = text.replace(reg, (text, ...group) => getReplaceText(command, text, ...group));
+                    } catch (error) {}
+                    action.edit?.replace(document.uri, selection, replaceText);
+                }
+            }
+        });
+
+        return action;
     }
 }
 
