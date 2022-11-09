@@ -35,7 +35,13 @@ export function getReplaceText(command: ReplaceCommand, text: string, ...args: s
 
     // 使用vm模块运行replace内容，获取运行结果
     let context = vm.createContext(paramMap);
-    return vm.runInContext(replace || '""', context, { timeout: 6000, displayErrors: true });
+    let result = vm.runInContext(replace || '""', context, { timeout: 6000, displayErrors: true });
+    // 类型保护，引用类型和undefined不返回
+    let resultType = typeof result;
+    if (['object', 'function', 'undefined'].includes(resultType) && result !== null) {
+        throw new SyntaxError(localize('replace.error.notString'));
+    }
+    return String(result);
 }
 
 export function restoreText(activeEditor: vscode.TextEditor, contentList: Replace.replaceRangeWithContent[]) {
@@ -73,9 +79,7 @@ export async function markChange(
         try {
             // FIXME 优化替换
             let replaceText = getReplaceText(command, originContent, ...group);
-            if (typeof replaceText !== 'string') {
-                throw new SyntaxError(localize('replace.error.notString'));
-            }
+
             replaceOperationList.push({ text: replaceText, range: previewRange });
             const oldRange = previewRange;
             const expandedTextLines = replaceText.split('\n');
