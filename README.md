@@ -129,61 +129,61 @@ match text and transform with JavaScript expression
     "jsReplace.commands": [
         {
             "name": "noCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.noCase($_)",
             "description": "aa bb"
         },
         {
             "name": "camelCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.camelCase($_)",
             "description": "aaBb"
         },
         {
             "name": "pascalCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.pascalCase($_)",
             "description": "AaBb"
         },
         {
             "name": "constantCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.constantCase($_)",
             "description": "AaBb"
         },
         {
             "name": "snakeCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.snakeCase($_)",
             "description": "aa_bb"
         },
         {
             "name": "pathCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.pathCase($_)",
             "description": "aa/bb"
         },
         {
             "name": "paramCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.paramCase($_)",
             "description": "aa-bb"
         },
         {
             "name": "dotCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.dotCase($_)",
             "description": "aa.bb"
         },
         {
             "name": "sentenceCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.sentenceCase($_)",
             "description": "aa bb"
         },
         {
             "name": "capitalCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.capitalCase($_)",
             "description": "Aa Bb"
         }

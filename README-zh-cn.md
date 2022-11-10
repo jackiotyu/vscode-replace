@@ -118,61 +118,61 @@
     "jsReplace.commands": [
         {
             "name": "noCase",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.noCase($_)",
             "description": "aa bb"
         },
         {
             "name": "camelCase(大驼峰)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.camelCase($_)",
             "description": "aaBb"
         },
         {
             "name": "pascalCase(小驼峰)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.pascalCase($_)",
             "description": "AaBb"
         },
         {
             "name": "constantCase(常量)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.constantCase($_)",
             "description": "AaBb"
         },
         {
             "name": "snakeCase(下划线)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.snakeCase($_)",
             "description": "aa_bb"
         },
         {
             "name": "pathCase(路径分隔符)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.pathCase($_)",
             "description": "aa/bb"
         },
         {
             "name": "paramCase(横杠分隔)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.paramCase($_)",
             "description": "aa-bb"
         },
         {
             "name": "dotCase(点分隔)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.dotCase($_)",
             "description": "aa.bb"
         },
         {
             "name": "sentenceCase(空格分隔单词)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.sentenceCase($_)",
             "description": "aa bb"
         },
         {
             "name": "capitalCase(首字母大写分隔单词)",
-            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "match": "\\w{1,}[ _-]?\\w{1,}",
             "replace": "ChangeCase.capitalCase($_)",
             "description": "Aa Bb"
         }
