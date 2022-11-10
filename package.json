@@ -1,7 +1,7 @@
 {
 	"publisher": "jackiotyu",
 	"name": "js-replace",
-	"displayName": "js replace",
+	"displayName": "JS Replace",
 	"description": "Replace the matching content with a JS statement(使用js语句替换匹配的内容)",
 	"version": "0.1.0",
 	"icon": "images/icon.png",
