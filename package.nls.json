@@ -14,7 +14,7 @@
     "ext.config.setting.actionLanguages.items": "A language id, like `typescript`.",
     "ext.config.setting.actionIgnoreCommands": "For commands that need to be ignored in code action, fill in the \"name\" field in jsReplace.commands",
     "ext.config.setting.actionIgnoreCommands.items": "\"name\" in jsReplace.commands",
-    "ext.config.setting.actionNameFormat": "Code action formatting, $name represents the command's name, $description represents the command's description",
+    "ext.config.setting.actionNameFormat": "Code action name formatting, $name represents the command's name, $description represents the command's description",
     "transform.match.input.title": "Enter a regular expression that matches the text",
     "transform.match.input.placeHolder": "Please enter a regular expression",
     "transform.match.input.prompt": "You do not need to add /, for example: [0-9]+ stands for /[0-9]+/g",

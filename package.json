@@ -65,13 +65,11 @@
 							},
 							"match": {
 								"type": "string",
-								"description": "%ext.config.commands.items.match%",
-								"default": "([0-9]{1,})rpx"
+								"description": "%ext.config.commands.items.match%"
 							},
 							"replace": {
 								"type": "string",
-								"description": "%ext.config.commands.items.replace%",
-								"default": "`${($1 / 2)}px`"
+								"description": "%ext.config.commands.items.replace%"
 							},
 							"description": {
 								"type": "string",
@@ -146,7 +144,7 @@
 				},
 				{
 					"name": "pascalCase",
-					"match": "\\w{1,}",
+					"match": "\\w{1,}[' '_-]?\\w{1,}",
 					"replace": "ChangeCase.pascalCase($_)",
 					"description": "AaBb"
 				}
@@ -171,7 +169,7 @@
 					"c"
 				],
 				"actionIgnoreCommands": [],
-				"actionNameFormat": "jsReplace $name ($description)"
+				"actionNameFormat": "JSR $name ($description)"
 			}
 		}
 	},

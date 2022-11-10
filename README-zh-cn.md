@@ -16,13 +16,15 @@
 
 ![example2](images/example2.gif)
 
+## 参数说明
+
 | 参数         | 类型     | 说明                                                                                                                          |
 | ------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `$1 到 $n`   | `String` | 匹配到的分组内容，从 `$1` 到 `$n` (配置中可修改变量前缀)                                                                      |
 | `$_`         | `String` | 匹配到的子串，即正则表达式匹配到的内容（配置中可修改该变量名）                                                                |
 | `ChangeCase` | `Object` | 内置的 [change case](https://www.npmjs.com/package/change-case) 变量，包含 change-case 的工具函数，例如 ChangeCase.pascalCase |
 
-## 参数说明
+## 配置说明
 
 ```json
 {
@@ -38,12 +40,6 @@
             "replace": "`${($1 / 2)}px`",
             // 描述
             "description": "rpx转换px"
-        },
-        {
-            "name": "define pascalCase",
-            "match": "\\w{1,}",
-            "replace": "ChangeCase.pascalCase($_)",
-            "description": "AaBb"
         }
     ],
     "jsReplace.setting": {
@@ -71,7 +67,79 @@
         // code action需要忽略的命令，填写jsReplace.commands中定义的"name"字段
         "actionIgnoreCommands": [
             // 例如："define pascalCase"
-        ]
+        ],
+        // Code action 命令名称格式化，
+        // $name代表命令的name字段，$description代表命令的description字段
+        "actionNameFormat": "JSR $name ($description)"
     }
+}
+```
+
+### change case 配置示例
+
+```json
+{
+    "jsReplace.commands": [
+        {
+            "name": "noCase",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.noCase($_)",
+            "description": "aa bb"
+        },
+        {
+            "name": "camelCase(大驼峰)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.camelCase($_)",
+            "description": "aaBb"
+        },
+        {
+            "name": "pascalCase(小驼峰)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.pascalCase($_)",
+            "description": "AaBb"
+        },
+        {
+            "name": "constantCase(常量)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.constantCase($_)",
+            "description": "AaBb"
+        },
+        {
+            "name": "snakeCase(下划线)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.snakeCase($_)",
+            "description": "aa_bb"
+        },
+        {
+            "name": "pathCase(路径分隔符)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.pathCase($_)",
+            "description": "aa/bb"
+        },
+        {
+            "name": "paramCase(横杠分隔)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.paramCase($_)",
+            "description": "aa-bb"
+        },
+        {
+            "name": "dotCase(点分隔)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.dotCase($_)",
+            "description": "aa.bb"
+        },
+        {
+            "name": "sentenceCase(空格分隔单词)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.sentenceCase($_)",
+            "description": "aa bb"
+        },
+        {
+            "name": "capitalCase(首字母大写分隔单词)",
+            "match": "\\w{1,}[' '_-]?\\w{1,}",
+            "replace": "ChangeCase.capitalCase($_)",
+            "description": "Aa Bb"
+        }
+    ]
 }
 ```
