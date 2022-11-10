@@ -1,4 +1,4 @@
-# js-replace <!-- omit in toc -->
+# JS Replace <!-- omit in toc -->
 
 [中文文档](./README-zh-cn.md)
 
@@ -9,12 +9,12 @@ match text and transform with JavaScript expression
 **Table of Contents**
 
 - [Features](#features)
-    - [Use command](#use-command)
-    - [Use code action](#use-code-action)
+  - [Use command](#use-command)
+  - [Use code action](#use-code-action)
 - [Configuration](#configuration)
-    - [Parameter description of replace](#parameter-description-of-replace)
-    - [Configuration example](#configuration-example)
-    - [Change case config example](#change-case-config-example)
+  - [Parameter description of replace](#parameter-description-of-replace)
+  - [Configuration example](#configuration-example)
+  - [Change case config example](#change-case-config-example)
 
 ## Features
 

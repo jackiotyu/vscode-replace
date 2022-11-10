@@ -1,4 +1,4 @@
-# js-replace <!-- omit in toc -->
+# JS Replace <!-- omit in toc -->
 
 [English doc](./README.md)
 
@@ -9,12 +9,12 @@
 **目录**
 
 - [功能](#功能)
-    - [使用命令](#使用命令)
-    - [使用 code action](#使用-code-action)
+  - [使用命令](#使用命令)
+  - [使用 code action](#使用-code-action)
 - [配置](#配置)
-    - [replace参数说明](#replace参数说明)
-    - [配置示例](#配置示例)
-    - [change case 配置](#change-case-配置)
+  - [replace参数说明](#replace参数说明)
+  - [配置示例](#配置示例)
+  - [change case 配置](#change-case-配置)
 
 ## 功能
 
