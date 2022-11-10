@@ -3,7 +3,7 @@
 	"name": "js-replace",
 	"displayName": "JS Replace",
 	"description": "Replace the matching content with a JS statement(使用js语句替换匹配的内容)",
-	"version": "0.1.4",
+	"version": "0.1.40",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
