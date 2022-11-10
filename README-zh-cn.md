@@ -1,22 +1,48 @@
-# vscode-replace
+# js-replace <!-- omit in toc -->
 
 [English doc](./README.md)
 
-## Features
-
-对选中文本执行 js 计算
-
-## 示例
-
-#### 1. 使用命令
+匹配文本，对选中文本执行 js 表示式，获取结果后替换内容
 
 ![example](images/example.gif)
 
-#### 2. 使用 code action
+**目录**
+
+- [功能](#功能)
+    - [使用命令](#使用命令)
+    - [使用 code action](#使用-code-action)
+- [配置](#配置)
+    - [replace参数说明](#replace参数说明)
+    - [配置示例](#配置示例)
+    - [change case 配置](#change-case-配置)
+
+## 功能
+
+- 对当前打开的编辑器内容进行匹配，对选中文本执行 js 表示式，获取结果
+- 手动选中文本，对匹配内容执行 js 表示式，获取结果
+
+#### 使用命令
+
+<details>
+<summary>示例</summary>
+
+![example](images/example.gif)
+</details>
+
+#### 使用 code action
+
+<details>
+<summary>示例</summary>
 
 ![example2](images/example2.gif)
+</details>
 
-## 参数说明
+## 配置
+
+#### replace参数说明
+
+<details>
+<summary>参数说明</summary>
 
 | 参数         | 类型     | 说明                                                                                                                          |
 | ------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -24,7 +50,12 @@
 | `$_`         | `String` | 匹配到的子串，即正则表达式匹配到的内容（配置中可修改该变量名）                                                                |
 | `ChangeCase` | `Object` | 内置的 [change case](https://www.npmjs.com/package/change-case) 变量，包含 change-case 的工具函数，例如 ChangeCase.pascalCase |
 
-## 配置说明
+</details>
+
+#### 配置示例
+
+<details>
+<summary>配置说明</summary>
 
 ```json
 {
@@ -75,7 +106,12 @@
 }
 ```
 
-### change case 配置示例
+</details>
+
+#### change case 配置
+
+<details>
+<summary>示例</summary>
 
 ```json
 {
@@ -143,3 +179,5 @@
     ]
 }
 ```
+
+</details>

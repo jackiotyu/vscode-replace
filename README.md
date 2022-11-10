@@ -1,28 +1,61 @@
-# js-replace
+# js-replace <!-- omit in toc -->
 
 [中文文档](./README-zh-cn.md)
 
-## Features
-
 match text and transform with JavaScript expression
-
-## Example
-
-#### 1. use command
 
 ![example](images/example.gif)
 
-#### 2. use code action
+**Table of Contents**
+
+- [Features](#features)
+    - [Use command](#use-command)
+    - [Use code action](#use-code-action)
+- [Configuration](#configuration)
+    - [Parameter description of replace](#parameter-description-of-replace)
+    - [Configuration example](#configuration-example)
+    - [Change case config example](#change-case-config-example)
+
+## Features
+
+- Matches the currently open editor content, transform with JavaScript expression
+- Manually select the text, transform with JavaScript expression
+
+#### Use command
+
+<details>
+<summary>example</summary>
+
+![example](images/example.gif)
+</details>
+
+#### Use code action
+
+<details>
+<summary>example</summary>
 
 ![example2](images/example2.gif)
+</details>
 
-## Parameter description
+## Configuration
+
+#### Parameter description of replace
+
+<details>
+<summary>table</summary>
 
 | parameter    | type     | description                                                                                                                                          |
 | ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `$1` to `$n` | `String` | Matched groupings from `$1` to `$n` (The variable prefix can be modified in the configuration)                                                       |
 | `$_`         | `String` | The substring that the regular expression matches (The variable name can be modified in the configuration)                                           |
 | `ChangeCase` | `Object` | The built-in [change case](https://www.npmjs.com/package/change-case) variable contains change-case utility functions, such as ChangeCase.pascalCase |
+
+</details>
+
+#### Configuration example
+
+<details>
+<summary>example</summary>
 
 ```json
 {
@@ -84,7 +117,12 @@ match text and transform with JavaScript expression
 }
 ```
 
-## change case config example
+</details>
+
+#### Change case config example
+
+<details>
+<summary>example</summary>
 
 ```json
 {
@@ -152,3 +190,5 @@ match text and transform with JavaScript expression
     ]
 }
 ```
+
+</details>
