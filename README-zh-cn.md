@@ -9,12 +9,12 @@
 **目录**
 
 - [功能](#功能)
-  - [使用命令](#使用命令)
-  - [使用 code action](#使用-code-action)
+    - [使用命令](#使用命令)
+    - [使用 code action](#使用-code-action)
 - [配置](#配置)
-  - [replace参数说明](#replace参数说明)
-  - [配置示例](#配置示例)
-  - [change case 配置](#change-case-配置)
+    - [replace参数说明](#replace参数说明)
+    - [配置示例](#配置示例)
+    - [change case 配置](#change-case-配置)
 
 ## 功能
 
@@ -93,7 +93,8 @@
             "javascriptreact",
             "sass",
             "go",
-            "c"
+            "c",
+            "vue"
         ],
         // code action需要忽略的命令，填写jsReplace.commands中定义的"name"字段
         "actionIgnoreCommands": [
