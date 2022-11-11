@@ -109,7 +109,7 @@ async function transform(activeEditor: vscode.TextEditor) {
             ...pickOptions,
         );
         cancelDecoration();
-        if (confirm === pickOptions[1]) {
+        if (confirm !== pickOptions[0]) {
             restoreText(activeEditor, contentList);
         }
     }
