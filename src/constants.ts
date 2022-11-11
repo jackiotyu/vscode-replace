@@ -29,7 +29,6 @@ export const DefaultSetting = {
         'sass',
         'go',
         'c',
-        'vue',
     ],
     ACTION_NAME_FORMAT: 'JSR $name ($description)',
 };

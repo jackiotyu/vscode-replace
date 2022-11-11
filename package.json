@@ -3,7 +3,7 @@
 	"name": "js-replace",
 	"displayName": "JS Replace",
 	"description": "Replace the matching content with a JS statement(使用js语句替换匹配的内容)",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
@@ -108,8 +108,7 @@
 								"javascriptreact",
 								"sass",
 								"go",
-								"c",
-								"vue"
+								"c"
 							],
 							"description": "%ext.config.setting.actionLanguages%",
 							"items": {
