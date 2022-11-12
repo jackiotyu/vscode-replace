@@ -13,10 +13,6 @@ export function getBaseUri() {
     return baseUri;
 }
 
-export function hotReload() {
-    vscode.postMessage({ type: 'reload' });
-}
-
 export default {
     install: (app: AppContext) => {
         app.config.globalProperties.baseUri = getBaseUri();

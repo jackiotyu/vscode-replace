@@ -65,7 +65,7 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
                 vscode.Uri.joinPath(
                     this._extensionUri,
                     'dist-web',
-                    'css/main.js'
+                    'css/main.css'
                 )
             );
         }
@@ -95,7 +95,7 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
                     <script type="text/javascript"
                         src="${scriptVendorUri}" nonce="${nonce}"></script>
                     <script type="text/javascript"
-                        src="${styleUri}" nonce="${nonce}"></script>
+                        src="${scriptUri}" nonce="${nonce}"></script>
                 </body>
                 </html>
             `;

@@ -7,16 +7,22 @@ import { RegisterCodeAction } from './codeAction';
 
 export function activate(context: vscode.ExtensionContext) {
     // 主要命令
-    let textTransform = vscode.commands.registerTextEditorCommand(Command.REPLACE_EVENT, (editor) => {
-        transform(editor);
-    });
+    let textTransform = vscode.commands.registerTextEditorCommand(
+        Command.REPLACE_EVENT,
+        (editor) => {
+            transform(editor);
+        }
+    );
     context.subscriptions.push(textTransform);
     // 注册code action
     new RegisterCodeAction(context);
     // UI
-    vscode.commands.registerCommand(Command.SELECT_OPTION_EVENT, (command: ReplaceCommand) => {
-        SelectOptionEvent.fire(command);
-    });
+    vscode.commands.registerCommand(
+        Command.SELECT_OPTION_EVENT,
+        (command: ReplaceCommand) => {
+            SelectOptionEvent.fire(command);
+        }
+    );
     new ReplaceExplorer(context);
 }
 
