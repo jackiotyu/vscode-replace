@@ -41,6 +41,15 @@
 				}
 			]
 		},
+		"views": {
+			"ReplaceExplorer": [
+				{
+					"id": "panel:webview",
+					"name": "webview",
+					"type": "webview"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "jsReplace.replace",
@@ -177,7 +186,7 @@
 		"pub": "vsce publish --pre-release",
 		"vscode:prepublish": "yarn run package",
 		"compile": "webpack",
-		"watch": "webpack --watch",
+		"watch": "concurrently \"npm --prefix web run serve\" \"webpack --watch\"",
 		"package": "webpack --mode production --devtool hidden-source-map",
 		"compile-tests": "tsc -p . --outDir out",
 		"watch-tests": "tsc -p . -w --outDir out",
@@ -193,6 +202,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
 		"@vscode/test-electron": "^2.1.3",
+		"concurrently": "^7.5.0",
 		"eslint": "^8.16.0",
 		"eslint-config-airbnb": "^19.0.4",
 		"glob": "^8.0.3",

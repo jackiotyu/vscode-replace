@@ -5,6 +5,7 @@ node_modules/**
 src/**
 types/**
 webview/**
+web/**
 .gitignore
 .yarnrc
 webpack.config.js

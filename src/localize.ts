@@ -8,6 +8,7 @@ interface ILanguagePack {
 
 export class Localize {
     private bundle = this.resolveLanguagePack();
+
     private options: { locale: string } = { locale: 'en' };
 
     public localize(key: string, ...args: string[]): string {
@@ -26,7 +27,12 @@ export class Localize {
     }
 
     private format(message: string, args: string[] = []): string {
-        return args.length ? message.replace(/\{(\d+)\}/g, (match, rest: any[]) => args[rest[0]] || match) : message;
+        return args.length
+            ? message.replace(
+                  /\{(\d+)\}/g,
+                  (match, rest: any[]) => args[rest[0]] || match
+              )
+            : message;
     }
 
     private resolveLanguagePack(): ILanguagePack {
@@ -35,18 +41,28 @@ export class Localize {
         const languageFormat = 'package.nls{0}.json';
         const defaultLanguage = languageFormat.replace('{0}', '');
 
-        const rootPath = extensions.getExtension('jackiotyu.js-replace')!.extensionPath;
+        const rootPath = extensions.getExtension(
+            'jackiotyu.js-replace'
+        )!.extensionPath;
 
-        const resolvedLanguage = this.recurseCandidates(rootPath, languageFormat, this.options.locale);
+        const resolvedLanguage = this.recurseCandidates(
+            rootPath,
+            languageFormat,
+            this.options.locale
+        );
 
         const languageFilePath = resolve(rootPath, resolvedLanguage);
 
         try {
             const defaultLanguageBundle = JSON.parse(
-                resolvedLanguage !== defaultLanguage ? readFileSync(resolve(rootPath, defaultLanguage), 'utf-8') : '{}',
+                resolvedLanguage !== defaultLanguage
+                    ? readFileSync(resolve(rootPath, defaultLanguage), 'utf-8')
+                    : '{}'
             );
 
-            const resolvedLanguageBundle = JSON.parse(readFileSync(languageFilePath, 'utf-8'));
+            const resolvedLanguageBundle = JSON.parse(
+                readFileSync(languageFilePath, 'utf-8')
+            );
 
             return { ...defaultLanguageBundle, ...resolvedLanguageBundle };
         } catch (err) {
@@ -54,14 +70,22 @@ export class Localize {
         }
     }
 
-    private recurseCandidates(rootPath: string, format: string, candidate: string): string {
+    private recurseCandidates(
+        rootPath: string,
+        format: string,
+        candidate: string
+    ): string {
         const filename = format.replace('{0}', `.${candidate}`);
         const filepath = resolve(rootPath, filename);
         if (existsSync(filepath)) {
             return filename;
         }
         if (candidate.split('-')[0] !== candidate) {
-            return this.recurseCandidates(rootPath, format, candidate.split('-')[0]);
+            return this.recurseCandidates(
+                rootPath,
+                format,
+                candidate.split('-')[0]
+            );
         }
         return format.replace('{0}', '');
     }
