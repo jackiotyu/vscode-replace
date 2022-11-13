@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDirs": [
       "src",
-      "../src"
+      "../src",
     ],
     "target": "esnext",
     "module": "esnext",
@@ -32,7 +32,7 @@
         "src/*"
       ],
       "@ext/*": [
-        "../src/*"
+        "../*"
       ]
     },
     "lib": [
@@ -48,5 +48,6 @@
     "src/**/*.vue",
     "./node_modules/@types",
     "types/**/*.d.ts",
+    "../types"
   ],
 }

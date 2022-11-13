@@ -39,16 +39,9 @@
 // import { getBaseUri } from '@/utils/common';
 import { ref, watch } from 'vue';
 import Bus from '@/utils/eventBus';
-import { WebviewMsgType, ExtMsgType } from '@ext/constants';
+import { WebviewMsgType, ExtMsgType } from '@ext/src/constants';
 // import { vscode } from '@/utils/common';
 // const baseUri = getBaseUri();
-
-interface ReplaceCommand {
-    name: string;
-    match: string;
-    replace: string;
-    description?: string;
-}
 
 export default {
     name: 'HomeView',
