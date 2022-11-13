@@ -11,6 +11,7 @@ import { Command, DefaultSetting } from './constants';
 import { getSetting, getActionCommands } from './utils/setting';
 import { isUndefined } from './utils/utils';
 import { getReplaceText } from './utils/getReplaceText';
+import { ReplaceCommand } from './common';
 
 class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
     public static readonly providedCodeActionKinds = [

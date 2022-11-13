@@ -1,3 +1,5 @@
+import { ReplaceCommand } from './common';
+
 export enum Command {
     EXTENSION_NAME = 'jsReplace',
     REPLACE_EVENT = 'jsReplace.replace',
@@ -6,10 +8,6 @@ export enum Command {
 }
 
 export const DefaultSetting = {
-    // 匹配到的子字符串在原字符串中的偏移量。（比如，如果原字符串是 'abcd'，匹配到的子字符串是 'bc'，那么这个参数将会是 1）
-    // OFFSET_KEY = '__offset__',
-    // 被匹配的原字符串
-    // ORIGIN_TEXT_KEY = '__origin_text__',
     // 匹配的子串
     MATCH_KEY: '$_',
     PREFIX_KEY: '$',
@@ -45,3 +43,47 @@ export enum WebviewMsgType {
     // 注册的命令
     COMMANDS = 'commands',
 }
+
+// 插件进程的type
+export type ExtMsgKey = `${ExtMsgType}`;
+
+// webview进程的type
+export type WebviewMsgKey = `${WebviewMsgType}`;
+
+export type MessageKey = ExtMsgKey | WebviewMsgKey;
+
+// 生成插件进程的payload
+export type GenExtPayload<T extends ExtMsgKey, K> = {
+    id: string;
+    type: T;
+    value?: K;
+};
+
+// 生成webview进程的payload
+export type GenWebviewPayload<T extends WebviewMsgKey, K> = {
+    id: string;
+    type: T;
+    value?: K;
+};
+
+// 插件进程发送给webview的数据格式
+export type ExtCommandsPayload = GenExtPayload<
+    ExtMsgType.COMMANDS,
+    ReplaceCommand[]
+>;
+
+// webview发送给插件进程的数据格式
+export type WebviewReloadMsg = GenWebviewPayload<
+    WebviewMsgType.RELOAD,
+    undefined
+>;
+export type WebviewCommandsMsg = GenWebviewPayload<
+    WebviewMsgType.COMMANDS,
+    undefined
+>;
+
+// webview发送给插件进程的数据格式
+export type WebviewPayloadType = WebviewReloadMsg | WebviewCommandsMsg;
+
+// 插件进程发送给webview的数据格式
+export type ExtPayloadType = ExtCommandsPayload;

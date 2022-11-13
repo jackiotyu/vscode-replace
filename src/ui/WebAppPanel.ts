@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { WebviewMsgType, ExtMsgType } from '../constants';
-import { getCommands } from '../utils/setting';
+import WebviewEventHandler from '../eventHandler';
 // import { getNonce } from './getNonce';
 
 export class WebViewPanelProvider implements vscode.WebviewViewProvider {
@@ -11,39 +10,24 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
     constructor(
         private readonly context: vscode.ExtensionContext,
         private readonly _extensionUri = context.extensionUri
-    ) { }
+    ) {}
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this.webviewView = webviewView;
         webviewView.webview.options = getWebviewOptions(this._extensionUri);
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
-        // TODO 事件处理
-        let count = 0;
-        webviewView.webview.onDidReceiveMessage(async ({ type, value }) => {
-            if (type === 'add') {
-                // vscode.window.showInformationMessage('添加', value);
-                count++;
-                webviewView.webview.postMessage({
-                    type: 'status',
-                    value: count,
-                });
-            }
-            if (type === WebviewMsgType.RELOAD) {
-                webviewView.webview.html = this._getHtmlForWebview(
-                    webviewView.webview
-                );
-            }
-            if (type === WebviewMsgType.COMMANDS) {
-                webviewView.webview.postMessage({
-                    type: ExtMsgType.COMMANDS,
-                    value: getCommands(),
-                });
-            }
-            if (type === 'error') {
-                vscode.window.showErrorMessage(value);
+        const reloadCallback = () => {
+            webviewView.webview.html = this._getHtmlForWebview(
+                webviewView.webview
+            );
+        };
+        let disposable = webviewView.webview.onDidReceiveMessage((e) => {
+            // 判断符合payload格式的内容
+            if ('type' in e && 'id' in e) {
+                WebviewEventHandler(e, webviewView, reloadCallback);
             }
         });
+        this._disposables.push(disposable);
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
@@ -102,7 +86,7 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 }
 
 /**
- * 获取webview路径
+ * 获取webview资源路径
  * @param webview
  * @param extensionUri
  * @returns

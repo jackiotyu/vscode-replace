@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { isReg } from './utils';
+import { ReplaceCommand } from '../common';
 
 export function getRange(text: string, reg: string) {
     let regexp = RegExp(reg, 'g');
@@ -35,7 +36,9 @@ export function getAllPosition(editor: vscode.TextEditor, reg: string) {
             const text = textArray[index];
             let range = getRange(text, reg);
             if (range.length) {
-                positionArray.push(...range.map((item) => ({ line: index, ...item })));
+                positionArray.push(
+                    ...range.map((item) => ({ line: index, ...item }))
+                );
             }
         }
         return positionArray;
@@ -51,7 +54,10 @@ export function getAllPosition(editor: vscode.TextEditor, reg: string) {
  * @param command
  * @returns
  */
-export function getMatchRangeList(activeEditor: vscode.TextEditor, command: ReplaceCommand) {
+export function getMatchRangeList(
+    activeEditor: vscode.TextEditor,
+    command: ReplaceCommand
+) {
     try {
         let positionArray = getAllPosition(activeEditor, command.match);
         let rangeList: Replace.RangeList = [];
@@ -59,7 +65,10 @@ export function getMatchRangeList(activeEditor: vscode.TextEditor, command: Repl
             rangeList = positionArray.map((item) => {
                 let { line, start, end, group, text } = item;
                 // 文字开始和结束范围
-                let range = new vscode.Range(new vscode.Position(line, start), new vscode.Position(line, end));
+                let range = new vscode.Range(
+                    new vscode.Position(line, start),
+                    new vscode.Position(line, end)
+                );
                 return { group, text, range };
             });
         }

@@ -5,6 +5,7 @@ import { isPickCommand, isUndefined } from './utils/utils';
 import { Command } from './constants';
 import { getMatchRangeList } from './utils/getRange';
 import { markChange, restoreText } from './utils/getReplaceText';
+import { ReplaceCommand } from './common';
 import localize from './localize';
 
 // 获取需要执行的命令
@@ -13,7 +14,9 @@ async function getCommand() {
     return command;
 }
 
-function getContentList(rangeList: Replace.RangeList): Replace.replaceRangeWithContent[] {
+function getContentList(
+    rangeList: Replace.RangeList
+): Replace.replaceRangeWithContent[] {
     return rangeList.map(({ range, group, text }) => {
         return {
             originContent: text,
@@ -49,7 +52,7 @@ async function transform(activeEditor: vscode.TextEditor) {
                     }
                     setMatchTextHighlight(
                         activeEditor,
-                        rangeList.map((i) => i.range),
+                        rangeList.map((i) => i.range)
                     );
                     return null;
                 } catch (error: any) {
@@ -83,30 +86,47 @@ async function transform(activeEditor: vscode.TextEditor) {
         command = { ...selectCommand };
         rangeList = getMatchRangeList(activeEditor, command);
         if (!rangeList.length) {
-            vscode.window.showWarningMessage(`${Command.EXTENSION_NAME}: ${localize('transform.error.unmatch')}`);
+            vscode.window.showWarningMessage(
+                `${Command.EXTENSION_NAME}: ${localize(
+                    'transform.error.unmatch'
+                )}`
+            );
             return;
         }
         let contentList = getContentList(rangeList);
 
         try {
-            let errorInfo = await markChange(command.replace, activeEditor, contentList, command);
+            let errorInfo = await markChange(
+                command.replace,
+                activeEditor,
+                contentList,
+                command
+            );
             if (errorInfo) {
                 throw new Error(errorInfo);
             }
         } catch (error: any) {
             // console.error(error);
             vscode.window.showWarningMessage(
-                localize('transform.error.analysisJs', Command.EXTENSION_NAME, command.name, error),
+                localize(
+                    'transform.error.analysisJs',
+                    Command.EXTENSION_NAME,
+                    command.name,
+                    error
+                )
                 // `${Command.EXTENSION_NAME}: 解析出错了！\n请检查命令 "${command.name}" 语法是否有错误\n${error}`,
             );
             restoreText(activeEditor, contentList);
             return;
         }
         // 确认替换
-        let pickOptions = [localize('common.action.confirm'), localize('common.action.cancel')];
+        let pickOptions = [
+            localize('common.action.confirm'),
+            localize('common.action.cancel'),
+        ];
         let confirm = await vscode.window.showInformationMessage(
             localize('transform.action.replace.confirm'),
-            ...pickOptions,
+            ...pickOptions
         );
         cancelDecoration();
         if (confirm !== pickOptions[0]) {

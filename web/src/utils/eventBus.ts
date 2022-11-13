@@ -1,31 +1,26 @@
 import mitt from 'mitt';
 import { vscode } from './common';
-
-interface Message {
-    type: 'reload' | 'commands' | 'match';
-    value?: any;
-    id?: string;
-}
+import { ExtPayloadType, WebviewPayloadType } from '@ext/src/constants';
 
 type Events = {
-    sendExt: Message;
+    sendExt: WebviewPayloadType;
     // TODO 规定信息格式
-    extMsg: Message;
+    extMsg: ExtPayloadType;
 };
 
 const Bus = mitt<Events>();
 
-let cbList = {};
-
 // 从插件进程发过来的消息
 // 监听方式：Bus.on('extMsg', e)
 window.onmessage = (e) => {
-    Bus.emit('extMsg', e.data);
+    if (e.data.type) {
+        Bus.emit('extMsg', e.data);
+    }
 };
 
 // 传递事件给插件进程
 // 使用方式：Bus.emit('sendExt', message)
-Bus.on('sendExt', (event: any) => {
+Bus.on('sendExt', (event) => {
     vscode.postMessage(event);
 });
 

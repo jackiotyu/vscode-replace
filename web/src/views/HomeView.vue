@@ -64,6 +64,8 @@
 import { ref, watch } from 'vue';
 import Bus from '@/utils/eventBus';
 import { WebviewMsgType, ExtMsgType } from '@ext/src/constants';
+import { genID } from '@ext/src/utils/utils';
+import { ReplaceCommand } from '@ext/src/common';
 // import { vscode } from '@/utils/common';
 // const baseUri = getBaseUri();
 
@@ -78,7 +80,7 @@ export default {
         let excludeFile = ref<string>();
         let filesNum = ref<number>(0);
         let matchesNum = ref<number>(0);
-        Bus.on('extMsg', (message: any) => {
+        Bus.on('extMsg', (message) => {
             console.log('🚀 message >>', message);
             if (message.type === ExtMsgType.COMMANDS) {
                 commands.value = message.value || [];
@@ -87,14 +89,10 @@ export default {
         });
 
         function triggerAdd() {
-            Bus.emit('sendExt', { type: 'reload', value: '1234' });
+            Bus.emit('sendExt', { type: WebviewMsgType.RELOAD, id: genID() });
         }
 
-        function handleSelect(e: any) {
-            console.log('🚀 e >>', e);
-        }
-
-        Bus.emit('sendExt', { type: WebviewMsgType.COMMANDS });
+        Bus.emit('sendExt', { type: WebviewMsgType.COMMANDS, id: genID() });
 
         watch(currentCommand, (currentCommand) => {
             console.log('🚀 currentCommand >>', currentCommand);
@@ -113,7 +111,6 @@ export default {
             matchesNum,
             triggerAdd,
             commands,
-            handleSelect,
             currentCommand,
             currentMatch,
         };

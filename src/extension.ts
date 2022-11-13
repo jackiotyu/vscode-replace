@@ -4,6 +4,7 @@ import { ReplaceExplorer } from './ui';
 import { SelectOptionEvent } from './event';
 import { Command } from './constants';
 import { RegisterCodeAction } from './codeAction';
+import { ReplaceCommand } from './common';
 
 export function activate(context: vscode.ExtensionContext) {
     // 主要命令
