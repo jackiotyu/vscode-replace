@@ -9,6 +9,8 @@ import {
     vsCodeDropdown,
     vsCodeOption,
     vsCodeTextArea,
+    vsCodeRadioGroup,
+    vsCodeRadio,
 } from '@vscode/webview-ui-toolkit';
 import GlobalSetting from '@/utils/common';
 
@@ -18,7 +20,9 @@ provideVSCodeDesignSystem().register(
     vsCodeCheckbox(),
     vsCodeDropdown(),
     vsCodeOption(),
-    vsCodeTextArea()
+    vsCodeTextArea(),
+    vsCodeRadioGroup(),
+    vsCodeRadio()
 );
 
 createApp(App).use(GlobalSetting).use(store).use(router).mount('#app');
