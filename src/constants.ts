@@ -35,6 +35,7 @@ export const DefaultSetting = {
 export enum ExtMsgType {
     // 注册的命令
     COMMANDS = 'commands',
+    MATCH = 'match',
 }
 
 // webview传递给插件进程的事件type
@@ -42,9 +43,10 @@ export enum WebviewMsgType {
     RELOAD = 'reload',
     // 注册的命令
     COMMANDS = 'commands',
+    MATCH = 'match'
 }
 
-// 插件进程的type
+// 插件进程的type, extension
 export type ExtMsgKey = `${ExtMsgType}`;
 
 // webview进程的type
@@ -82,8 +84,13 @@ export type WebviewCommandsMsg = GenWebviewPayload<
     undefined
 >;
 
+export type WebviewMatchMsg = GenWebviewPayload<
+    WebviewMsgType.MATCH,
+    string
+>;
+
 // webview发送给插件进程的数据格式
-export type WebviewPayloadType = WebviewReloadMsg | WebviewCommandsMsg;
+export type WebviewPayloadType = WebviewReloadMsg | WebviewCommandsMsg | WebviewMatchMsg;
 
 // 插件进程发送给webview的数据格式
 export type ExtPayloadType = ExtCommandsPayload;

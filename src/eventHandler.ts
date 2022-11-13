@@ -7,7 +7,7 @@ import {
     ExtPayloadType,
 } from './constants';
 import { getCommands } from './utils/setting';
-import { genID } from './utils/utils';
+// import { genID } from './utils/utils';
 
 /**
  * 发送内容给webview，规范payload格式
@@ -26,7 +26,7 @@ function postMessage(webviewView: vscode.WebviewView, payload: ExtPayloadType) {
  * @returns
  */
 export default async function WebviewEventHandler(
-    { type, value }: WebviewPayloadType,
+    { type, value, id }: WebviewPayloadType,
     webviewView: vscode.WebviewView,
     reloadCallback: Function
 ) {
@@ -41,9 +41,14 @@ export default async function WebviewEventHandler(
         const payload: ExtCommandsPayload = {
             type: ExtMsgType.COMMANDS,
             value: getCommands(),
-            id: genID(),
+            id,
         };
         postMessage(webviewView, payload);
+        return;
+    }
+
+    if (type === WebviewMsgType.MATCH) {
+        // TODO 需要匹配字符串
         return;
     }
 

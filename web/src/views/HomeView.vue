@@ -62,8 +62,11 @@
 <script lang="ts">
 // import { getBaseUri } from '@/utils/common';
 import { ref, watch } from 'vue';
-import Bus from '@/utils/eventBus';
-import { WebviewMsgType, ExtMsgType } from '@ext/src/constants';
+import Bus, { sendMsg } from '@/utils/eventBus';
+import {
+    WebviewMsgType,
+    // ExtMsgType
+} from '@ext/src/constants';
 import { genID } from '@ext/src/utils/utils';
 import { ReplaceCommand } from '@ext/src/common';
 // import { vscode } from '@/utils/common';
@@ -80,19 +83,19 @@ export default {
         let excludeFile = ref<string>();
         let filesNum = ref<number>(0);
         let matchesNum = ref<number>(0);
-        Bus.on('extMsg', (message) => {
-            console.log('🚀 message >>', message);
-            if (message.type === ExtMsgType.COMMANDS) {
-                commands.value = message.value || [];
-                return;
-            }
-        });
+        // Bus.on('extMsg', (message) => {
+        //     console.log('🚀 message >>', message);
+        //     if (message.type === ExtMsgType.COMMANDS) {
+        //         commands.value = message.value || [];
+        //         return;
+        //     }
+        // });
 
         function triggerAdd() {
             Bus.emit('sendExt', { type: WebviewMsgType.RELOAD, id: genID() });
         }
 
-        Bus.emit('sendExt', { type: WebviewMsgType.COMMANDS, id: genID() });
+        // Bus.emit('sendExt', { type: WebviewMsgType.COMMANDS, id: genID() });
 
         watch(currentCommand, (currentCommand) => {
             console.log('🚀 currentCommand >>', currentCommand);
@@ -102,6 +105,13 @@ export default {
             currentMatch.value = command?.match;
             // Bus.emit('sendExt', {})
         });
+
+        sendMsg({ type: WebviewMsgType.COMMANDS, id: genID() }).then(
+            (message) => {
+                console.log(message, 'res');
+                commands.value = message.value || [];
+            }
+        );
 
         return {
             replaceText,

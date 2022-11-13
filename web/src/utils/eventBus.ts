@@ -24,4 +24,20 @@ Bus.on('sendExt', (event) => {
     vscode.postMessage(event);
 });
 
+export function sendMsg(message: WebviewPayloadType) {
+    return new Promise<ExtPayloadType>((resolve) => {
+        Bus.emit('sendExt', message);
+
+        const cb = (data: any) => {
+            console.log('e', data);
+            if (data.id === message.id) {
+                resolve(data);
+                Bus.off('extMsg', cb);
+            }
+        };
+
+        Bus.on('extMsg', cb);
+    });
+}
+
 export default Bus;

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { transform } from './main';
 import { ReplaceExplorer } from './ui';
-import { SelectOptionEvent } from './event';
+// import { SelectOptionEvent } from './event';
 import { Command } from './constants';
 import { RegisterCodeAction } from './codeAction';
 import { ReplaceCommand } from './common';
@@ -18,13 +18,13 @@ export function activate(context: vscode.ExtensionContext) {
     // 注册code action
     new RegisterCodeAction(context);
     // UI
-    vscode.commands.registerCommand(
-        Command.SELECT_OPTION_EVENT,
-        (command: ReplaceCommand) => {
-            SelectOptionEvent.fire(command);
-        }
-    );
+    // vscode.commands.registerCommand(
+    //     Command.SELECT_OPTION_EVENT,
+    //     (command: ReplaceCommand) => {
+    //         SelectOptionEvent.fire(command);
+    //     }
+    // );
     new ReplaceExplorer(context);
 }
 
-export function deactivate() {}
+export function deactivate() { }
