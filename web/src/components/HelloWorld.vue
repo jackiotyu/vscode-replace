@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { defineProps, ref } from 'vue';
-import { vscode } from '@/utils/common';
+import Bus from '@/utils/eventBus';
 
 const props = defineProps({
     msg: { type: String, required: true },
@@ -20,10 +20,10 @@ const props = defineProps({
 const msg = ref(props.msg);
 
 function triggerAdd() {
-    vscode.postMessage({ type: 'add', value: '1234' });
+    Bus.emit('sendExt', { type: 'add', value: '1234' });
 }
 function triggerReload() {
-    vscode.postMessage({ type: 'reload' });
+    Bus.emit('sendExt', { type: 'reload' });
 }
 </script>
 

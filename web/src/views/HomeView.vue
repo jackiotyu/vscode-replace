@@ -1,16 +1,20 @@
 <template>
     <div class="mainBox">
         <h1 ref="ref1">{{ msg }}</h1>
-        <vscode-dropdown class="selectBox topButMargin">
-            <vscode-option value=""></vscode-option>
-            <vscode-option value="1">预设1</vscode-option>
-            <vscode-option value="2">预设2</vscode-option>
-            <vscode-option value="3">预设3</vscode-option>
-            <vscode-option value="4">预设4</vscode-option>
+        <vscode-dropdown
+            class="selectBox topButMargin"
+            v-model="currentCommand"
+        >
+            <vscode-option
+                :value="command.name"
+                v-for="command in commands"
+                :key="command.name"
+                >{{ command.name }}</vscode-option
+            >
         </vscode-dropdown>
         <div class="flexBox topButMargin">
             <input type="text" placeholder="匹配" class="matching" />
-            <vscode-button>匹配</vscode-button>
+            <vscode-button @click="triggerAdd">匹配</vscode-button>
         </div>
         <div class="flexBox topButMargin">
             <input type="text" placeholder="替换" />
@@ -33,18 +37,56 @@
 
 <script lang="ts">
 // import { getBaseUri } from '@/utils/common';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import Bus from '@/utils/eventBus';
+import { WebviewMsgType, ExtMsgType } from '@ext/constants';
 // import { vscode } from '@/utils/common';
 // const baseUri = getBaseUri();
+
+interface ReplaceCommand {
+    name: string;
+    match: string;
+    replace: string;
+    description?: string;
+}
+
 export default {
     name: 'HomeView',
     setup() {
-        let msg = ref('JS Replayce');
+        let msg = ref('JS Replace');
+        let commands = ref<ReplaceCommand[]>([]);
+        let currentCommand = ref<ReplaceCommand>();
+
+        Bus.on('extMsg', (message) => {
+            console.log('🚀 message >>', message);
+            if (message.type === ExtMsgType.COMMANDS) {
+                commands.value = message.value || [];
+                return;
+            }
+        });
+
+        function triggerAdd() {
+            Bus.emit('sendExt', { type: 'add', value: '1234' });
+        }
+
+        function handleSelect(e: any) {
+            console.log('🚀 e >>', e);
+        }
+
+        Bus.emit('sendExt', { type: WebviewMsgType.COMMANDS });
+
+        watch(currentCommand, (currentCommand) => {
+            console.log('🚀 currentCommand >>', currentCommand);
+        });
+
         return {
             msg,
+            triggerAdd,
+            commands,
+            handleSelect,
+            currentCommand,
         };
     },
-    components: {},
 };
 </script>
 <style lang="scss">

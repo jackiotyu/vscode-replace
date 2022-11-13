@@ -1,7 +1,7 @@
 import { App } from 'vue';
 
-export const vscode = window.__vscode__ ?? window.acquireVsCodeApi?.();
-window.__vscode__ ??= vscode;
+export const vscode =
+    window.__vscode__ ?? (window.__vscode__ = window.acquireVsCodeApi?.());
 
 let baseUri = '';
 export function getBaseUri() {

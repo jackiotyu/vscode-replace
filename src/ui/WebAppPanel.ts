@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import { WebviewMsgType, ExtMsgType } from '../constants';
+import { getCommands } from '../utils/setting';
 // import { getNonce } from './getNonce';
 
 export class WebViewPanelProvider implements vscode.WebviewViewProvider {
@@ -16,15 +18,27 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
         webviewView.webview.options = getWebviewOptions(this._extensionUri);
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        // TODO
+        // TODO 事件处理
+        let count = 0;
         webviewView.webview.onDidReceiveMessage(async ({ type, value }) => {
             if (type === 'add') {
-                vscode.window.showInformationMessage('添加', value);
+                // vscode.window.showInformationMessage('添加', value);
+                count++;
+                webviewView.webview.postMessage({
+                    type: 'status',
+                    value: count,
+                });
             }
-            if (type === 'reload') {
+            if (type === WebviewMsgType.RELOAD) {
                 webviewView.webview.html = this._getHtmlForWebview(
                     webviewView.webview
                 );
+            }
+            if (type === WebviewMsgType.COMMANDS) {
+                webviewView.webview.postMessage({
+                    type: ExtMsgType.COMMANDS,
+                    value: getCommands(),
+                });
             }
         });
     }

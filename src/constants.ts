@@ -32,3 +32,16 @@ export const DefaultSetting = {
     ],
     ACTION_NAME_FORMAT: 'JSR $name ($description)',
 };
+
+// 插件进程传递给webview的事件type
+export enum ExtMsgType {
+    // 注册的命令
+    COMMANDS = 'commands',
+}
+
+// webview传递给插件进程的事件type
+export enum WebviewMsgType {
+    RELOAD = 'reload',
+    // 注册的命令
+    COMMANDS = 'commands',
+}

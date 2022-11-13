@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDirs": [
+      "src",
+      "../src"
+    ],
     "target": "esnext",
     "module": "esnext",
     "strict": true,
@@ -21,11 +24,15 @@
     ],
     "typeRoots": [
       "./node_modules/@types",
-      "./types"
+      "./types",
+      "../types"
     ],
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@ext/*": [
+        "../src/*"
       ]
     },
     "lib": [
@@ -40,6 +47,6 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "./node_modules/@types",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
   ],
 }

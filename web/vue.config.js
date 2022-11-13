@@ -65,5 +65,10 @@ module.exports = defineConfig({
             filename: '[name].js',
             chunkFilename: 'chunk-vendors.js',
         },
+        resolve: {
+            alias: {
+                '@ext': path.resolve(__dirname, '../src'),
+            },
+        },
     },
 });
