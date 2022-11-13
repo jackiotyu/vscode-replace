@@ -67,7 +67,7 @@ module.exports = defineConfig({
         },
         resolve: {
             alias: {
-                '@ext': path.resolve(__dirname, '../src'),
+                '@ext': path.resolve(__dirname, '..'),
             },
         },
     },

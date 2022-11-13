@@ -1,3 +1,4 @@
 node_modules/
 .eslintrc.js
 lint-staged.config.js
+src/
