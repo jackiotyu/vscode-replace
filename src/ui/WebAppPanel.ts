@@ -45,7 +45,7 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
         let styleUri;
         if (isDev) {
             const localPort = 3000;
-            const localServerUrl = `localhost:${localPort}`;
+            const localServerUrl = `127.0.0.1:${localPort}`;
             const scriptHost = `http://${localServerUrl}`;
             scriptUri = `${scriptHost}/dist-web/main.js`;
             scriptVendorUri = `${scriptHost}/dist-web/chunk-vendors.js`;
@@ -89,8 +89,7 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
                     <link href="${styleUri}" rel="stylesheet">
                     <title>JS Replace Panel</title>
                 </head>
-                <body>
-                <input hidden data-uri="${baseUri}">
+                <body data-uri="${baseUri}">
                     <div id="app"></div>
                     <script type="text/javascript"
                         src="${scriptVendorUri}" nonce="${nonce}"></script>
