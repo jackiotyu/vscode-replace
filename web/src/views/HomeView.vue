@@ -13,7 +13,12 @@
             >
         </vscode-dropdown>
         <div class="flexBox topButMargin">
-            <input type="text" placeholder="匹配" class="matching" />
+            <input
+                v-model="currentMatch"
+                type="text"
+                placeholder="匹配"
+                class="matching"
+            />
             <vscode-button @click="triggerAdd">匹配</vscode-button>
         </div>
         <div class="flexBox topButMargin">
@@ -31,6 +36,7 @@
                 >个结果
             </vscode-checkbox>
         </div>
+
         <div class="resultList"></div>
     </div>
 </template>
@@ -48,9 +54,10 @@ export default {
     setup() {
         let msg = ref('JS Replace');
         let commands = ref<ReplaceCommand[]>([]);
-        let currentCommand = ref<ReplaceCommand>();
+        let currentCommand = ref<string>();
+        let currentMatch = ref<string>();
 
-        Bus.on('extMsg', (message) => {
+        Bus.on('extMsg', (message: any) => {
             console.log('🚀 message >>', message);
             if (message.type === ExtMsgType.COMMANDS) {
                 commands.value = message.value || [];
@@ -59,7 +66,7 @@ export default {
         });
 
         function triggerAdd() {
-            Bus.emit('sendExt', { type: 'add', value: '1234' });
+            Bus.emit('sendExt', { type: 'reload', value: '1234' });
         }
 
         function handleSelect(e: any) {
@@ -70,6 +77,11 @@ export default {
 
         watch(currentCommand, (currentCommand) => {
             console.log('🚀 currentCommand >>', currentCommand);
+            let command = (commands.value || []).find(
+                (item) => item.name === currentCommand
+            );
+            currentMatch.value = command?.match;
+            // Bus.emit('sendExt', {})
         });
 
         return {
@@ -78,6 +90,7 @@ export default {
             commands,
             handleSelect,
             currentCommand,
+            currentMatch,
         };
     },
 };
@@ -121,6 +134,7 @@ export default {
     .textActive {
         color: rgb(0, 189, 247);
     }
+
     .resultList {
         background-color: #21252b;
         width: 100%;

@@ -8,9 +8,11 @@
     -webkit-font-smoothing: antialiased;
     height: 100%;
 }
-html,
-body {
+html {
     height: 100%;
+}
+body {
+    height: 98%;
 }
 nav {
     padding: 30px;

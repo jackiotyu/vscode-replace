@@ -36,7 +36,7 @@
 			"activitybar": [
 				{
 					"id": "ReplaceExplorer",
-					"icon": "images/icon.png",
+					"icon": "images/icon.svg",
 					"title": "JS Replace"
 				}
 			]

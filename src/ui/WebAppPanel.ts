@@ -11,7 +11,7 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
     constructor(
         private readonly context: vscode.ExtensionContext,
         private readonly _extensionUri = context.extensionUri
-    ) {}
+    ) { }
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this.webviewView = webviewView;
@@ -39,6 +39,9 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
                     type: ExtMsgType.COMMANDS,
                     value: getCommands(),
                 });
+            }
+            if (type === 'error') {
+                vscode.window.showErrorMessage(value);
             }
         });
     }
