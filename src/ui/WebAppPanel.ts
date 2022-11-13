@@ -33,42 +33,14 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
         const styleResetUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
         );
-
         const styleVSCodeUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
         );
 
-        // TODO 判断开发环境
-        let isDev = true;
-        let scriptUri;
-        let scriptVendorUri;
-        let styleUri;
-        if (isDev) {
-            const localPort = 3000;
-            const localServerUrl = `127.0.0.1:${localPort}`;
-            const scriptHost = `http://${localServerUrl}`;
-            scriptUri = `${scriptHost}/dist-web/main.js`;
-            scriptVendorUri = `${scriptHost}/dist-web/chunk-vendors.js`;
-            styleUri = `${scriptHost}/dist-web/css/main.css`;
-        } else {
-            scriptUri = webview.asWebviewUri(
-                vscode.Uri.joinPath(this._extensionUri, 'dist-web', 'main.js')
-            );
-            scriptVendorUri = webview.asWebviewUri(
-                vscode.Uri.joinPath(
-                    this._extensionUri,
-                    'dist-web',
-                    'chunk-vendors.js'
-                )
-            );
-            styleUri = webview.asWebviewUri(
-                vscode.Uri.joinPath(
-                    this._extensionUri,
-                    'dist-web',
-                    'css/main.css'
-                )
-            );
-        }
+        let { scriptUri, scriptVendorUri, styleUri } = getResourceUri(
+            webview,
+            this._extensionUri
+        );
 
         const baseUri = webview
             .asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist-web'))
@@ -109,5 +81,40 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
             vscode.Uri.joinPath(extensionUri, 'media'),
             vscode.Uri.joinPath(extensionUri, 'dist-web'),
         ],
+    };
+}
+
+/**
+ * 获取webview路径
+ * @param webview
+ * @param extensionUri
+ * @returns
+ */
+function getResourceUri(webview: vscode.Webview, extensionUri: vscode.Uri) {
+    // 判断开发环境
+    let isDev = process.env.NODE_ENV !== 'production';
+    let scriptUri;
+    let scriptVendorUri;
+    let styleUri;
+    if (isDev) {
+        const scriptHost = `http://127.0.0.1:3000`;
+        scriptUri = `${scriptHost}/dist-web/main.js`;
+        scriptVendorUri = `${scriptHost}/dist-web/chunk-vendors.js`;
+        styleUri = `${scriptHost}/dist-web/css/main.css`;
+    } else {
+        scriptUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(extensionUri, 'dist-web', 'main.js')
+        );
+        scriptVendorUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(extensionUri, 'dist-web', 'chunk-vendors.js')
+        );
+        styleUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(extensionUri, 'dist-web', 'css/main.css')
+        );
+    }
+    return {
+        scriptUri,
+        scriptVendorUri,
+        styleUri,
     };
 }

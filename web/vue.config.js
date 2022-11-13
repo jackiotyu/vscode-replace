@@ -1,17 +1,23 @@
 const { defineConfig } = require('@vue/cli-service');
 const path = require('path');
 
-const webpackHotDevServer = path.resolve(
-    __dirname,
-    './utils/webpack-hot-dev-server.js'
-);
-const devEntries = [webpackHotDevServer];
+const isDev = process.env.NODE_ENV !== 'production';
+
+let devEntries = [];
+if (isDev) {
+    const webpackHotDevServer = path.resolve(
+        __dirname,
+        './utils/webpack-hot-dev-server.js'
+    );
+    devEntries = [webpackHotDevServer];
+}
+const publicPath = isDev ? 'http://127.0.0.1:3000/dist-web' : '';
 
 module.exports = defineConfig({
     transpileDependencies: true,
     filenameHashing: false,
     outputDir: path.resolve(__dirname, '../dist-web'),
-    publicPath: 'http://127.0.0.1:3000/dist-web',
+    publicPath: publicPath,
     devServer: {
         host: '127.0.0.1',
         port: 3000,
