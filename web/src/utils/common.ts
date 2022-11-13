@@ -1,4 +1,4 @@
-import { AppContext } from 'vue';
+import { App } from 'vue';
 
 export const vscode = window.__vscode__ ?? window.acquireVsCodeApi?.();
 window.__vscode__ ??= vscode;
@@ -14,7 +14,7 @@ export function getBaseUri() {
 }
 
 export default {
-    install: (app: AppContext) => {
+    install(app: App) {
         app.config.globalProperties.baseUri = getBaseUri();
     },
 };

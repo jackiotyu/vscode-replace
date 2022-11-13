@@ -10,16 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-    provideVSCodeDesignSystem,
-    vsCodeButton,
-    vsCodeCheckbox,
-} from '@vscode/webview-ui-toolkit';
 import { defineProps, ref } from 'vue';
 import { vscode } from '@/utils/common';
-
-// 注册组件
-provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeCheckbox());
 
 const props = defineProps({
     msg: { type: String, required: true },

@@ -41,6 +41,16 @@ module.exports = defineConfig({
             });
             return [pathConfigs];
         });
+        config.module
+            .rule('vue')
+            .use('vue-loader')
+            .tap((options) => {
+                options.compilerOptions = {
+                    ...options.compilerOptions,
+                    isCustomElement: (tag) => tag.startsWith('vscode-'),
+                };
+                return options;
+            });
     },
     configureWebpack: {
         entry: [...devEntries, './src/main.ts'],
