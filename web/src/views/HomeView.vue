@@ -1,6 +1,5 @@
 <template>
     <div class="mainBox">
-        <h1 ref="ref1">{{ msg }}</h1>
         <vscode-dropdown
             class="selectBox topButMargin"
             v-model="currentCommand"
@@ -13,28 +12,47 @@
             >
         </vscode-dropdown>
         <div class="flexBox topButMargin">
-            <input
+            <vscode-text-area
                 v-model="currentMatch"
-                type="text"
                 placeholder="匹配"
                 class="matching"
-            />
+            ></vscode-text-area>
             <vscode-button @click="triggerAdd">匹配</vscode-button>
         </div>
         <div class="flexBox topButMargin">
-            <input type="text" placeholder="替换" />
+            <vscode-text-area
+                v-model="replaceText"
+                class="replaceText"
+                placeholder="替换"
+            ></vscode-text-area>
+        </div>
+        <div class="topButMargin">
+            <span class="place">包含的文件</span>
+            <input
+                type="text"
+                v-model="includeFile"
+                placeholder="例如*.ts、src/"
+            />
+        </div>
+        <div class="topButMargin">
+            <span class="place">排除的文件</span>
+            <input
+                type="text"
+                v-model="excludeFile"
+                placeholder="例如*.ts、src/"
+            />
         </div>
         <div class="buttonBox topButMargin">
             <vscode-button class="btnLeftMargin">保存预设</vscode-button>
             <vscode-button class="btnLeftMargin">替换</vscode-button>
         </div>
         <div class="flexBox topButMargin">
-            <vscode-checkbox>
-                <span class="textActive">12 </span>文件匹配到<span
+            <span>
+                <span class="textActive">{{ filesNum }} </span>个文件匹配到<span
                     class="textActive"
-                    >1234 </span
-                >个结果
-            </vscode-checkbox>
+                    >{{ matchesNum }} </span
+                >个结果</span
+            >
         </div>
 
         <div class="resultList"></div>
@@ -52,11 +70,14 @@ import { WebviewMsgType, ExtMsgType } from '@ext/src/constants';
 export default {
     name: 'HomeView',
     setup() {
-        let msg = ref('JS Replace');
         let commands = ref<ReplaceCommand[]>([]);
         let currentCommand = ref<string>();
         let currentMatch = ref<string>();
-
+        let replaceText = ref<string>();
+        let includeFile = ref<string>();
+        let excludeFile = ref<string>();
+        let filesNum = ref<number>(0);
+        let matchesNum = ref<number>(0);
         Bus.on('extMsg', (message: any) => {
             console.log('🚀 message >>', message);
             if (message.type === ExtMsgType.COMMANDS) {
@@ -85,7 +106,11 @@ export default {
         });
 
         return {
-            msg,
+            replaceText,
+            includeFile,
+            excludeFile,
+            filesNum,
+            matchesNum,
             triggerAdd,
             commands,
             handleSelect,
@@ -97,7 +122,7 @@ export default {
 </script>
 <style lang="scss">
 .topButMargin {
-    margin: 6px 0px;
+    margin: 4px 0px;
 }
 
 .btnLeftMargin {
@@ -111,9 +136,12 @@ export default {
     min-width: 200px;
     margin: 0px auto;
     position: relative;
+    display: flex;
+    flex-direction: column;
 
     .selectBox {
         width: 100%;
+        background-color: #1d1f23;
     }
 
     .flexBox {
@@ -124,6 +152,17 @@ export default {
     .matching {
         flex: 1;
         margin-right: 6px;
+        height: 50px;
+    }
+    .replaceText {
+        flex: 1;
+        height: 50px;
+    }
+    .place {
+        display: inline-block;
+        margin-bottom: 4px;
+        line-height: 11px;
+        font-size: 11px;
     }
 
     .buttonBox {
@@ -136,12 +175,8 @@ export default {
     }
 
     .resultList {
-        background-color: #21252b;
-        width: 100%;
-        position: absolute;
-        left: 0;
-        top: 212px;
-        bottom: 0px;
+        background-color: #1d1f23;
+        flex: 1;
     }
 }
 </style>

@@ -13,6 +13,7 @@ html {
 }
 body {
     height: 98%;
+    background-color: #21252b;
 }
 nav {
     padding: 30px;
