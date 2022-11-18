@@ -106,10 +106,15 @@ class RegisterCodeAction {
     // 检查配置
     checkRegister(context: vscode.ExtensionContext) {
         let supportLanguageList = getSetting().actionLanguages;
+        let supportPattern = getSetting().actionPattern;
         let commands = getActionCommands();
         this.disposeAction();
         if (!supportLanguageList?.length) return;
         if (!commands?.length) return;
+        if (supportPattern) {
+            this.registerAction(context, supportPattern);
+            return;
+        }
         this.registerAction(context, supportLanguageList);
     }
 
@@ -121,19 +126,22 @@ class RegisterCodeAction {
     // 注册code action
     registerAction(
         context: vscode.ExtensionContext,
-        supportLanguageList: string[]
-    ) {
+        option: string[] | string
+    ): void {
+        let actionSetting =
+            typeof option === 'string'
+                ? { scheme: 'file', pattern: option }
+                : option.map((language) => ({ scheme: 'file', language }));
+
         this.actionRegister = vscode.languages.registerCodeActionsProvider(
-            supportLanguageList.map((language) => ({
-                scheme: 'file',
-                language,
-            })),
+            actionSetting,
             new ReplaceCodeActionProvider(),
             {
                 providedCodeActionKinds:
                     ReplaceCodeActionProvider.providedCodeActionKinds,
             }
         );
+
         context.subscriptions.push(this.actionRegister);
     }
 }

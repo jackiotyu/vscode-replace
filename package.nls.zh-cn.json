@@ -12,6 +12,7 @@
     "ext.config.setting.prefix": "匹配到分组变量的前缀，设置为$，则变量为$1到$n",
     "ext.config.setting.actionLanguages": "将命令注册到code action中",
     "ext.config.setting.actionLanguages.items": "支持的语言，例如：typescript",
+    "ext.config.setting.actionPattern": "配置code action匹配的文件，使用 ** 匹配所有文件，优先级高于actionLanguages",
     "ext.config.setting.actionIgnoreCommands": "code action需要忽略的命令，填写jsReplace.commands中定义的\"name\"字段",
     "ext.config.setting.actionIgnoreCommands.items": "jsReplace.commands中定义的\"name\"",
     "ext.config.setting.actionNameFormat": "Code action 命令名称格式化，$name代表命令的name字段，$description代表命令的description字段",

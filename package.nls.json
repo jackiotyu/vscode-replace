@@ -12,6 +12,7 @@
     "ext.config.setting.prefix": "If the prefix matches the grouping variable, set to $, the variable is $1 to $n",
     "ext.config.setting.actionLanguages": "Register the command with the code action",
     "ext.config.setting.actionLanguages.items": "A language id, like `typescript`.",
+    "ext.config.setting.actionPattern": "Configure the files that code action matches, using ** to match all files, Priority is higher than actionLanguages",
     "ext.config.setting.actionIgnoreCommands": "For commands that need to be ignored in code action, fill in the \"name\" field in jsReplace.commands",
     "ext.config.setting.actionIgnoreCommands.items": "\"name\" in jsReplace.commands",
     "ext.config.setting.actionNameFormat": "Code action name formatting, $name represents the command's name, $description represents the command's description",

@@ -78,6 +78,8 @@
         "match": "$_",
         // 匹配到分组变量的前缀，设置为$，则变量为$1到$n
         "prefix": "$",
+        // 配置code action匹配的文件，使用 ** 匹配所有文件，优先级高于actionLanguages
+        "actionPattern": "**",
         // 将命令注册到code action中
         "actionLanguages": [
             "javascript",

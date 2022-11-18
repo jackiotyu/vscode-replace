@@ -14,6 +14,7 @@ interface ReplaceSetting {
     match?: string;
     prefix?: string;
     actionLanguages?: string[];
+    actionPattern?: string;
     actionIgnoreCommands?: string[];
     actionNameFormat?: string;
 }

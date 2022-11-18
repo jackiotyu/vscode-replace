@@ -88,6 +88,8 @@ match text and transform with JavaScript expression
         // If the prefix matches the grouping variable,
         // set to $, the variable is $1 to $n
         "prefix": "$",
+        // Configure the files that code action matches, using ** to match all files, Priority is higher than actionLanguages
+        "actionPattern": "**",
         // Register the command with the code action
         "actionLanguages": [
             "javascript",

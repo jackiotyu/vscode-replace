@@ -8,16 +8,22 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
--   Added built-in Change Case
+- Added glob pattern for code action
+
+## [0.0.6] - 2022-11-08
+
+### Added
+
+- Added built-in Change Case
 
 ## [0.0.4] - 2022-11-08
 
 ### Added
 
--   Added Code Action Support
+- Added Code Action Support
 
 ## [0.0.3] - 2022-11-08
 
 ### Added
 
--   Added English translation
+- Added English translation

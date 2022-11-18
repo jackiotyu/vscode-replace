@@ -31,6 +31,7 @@ export const DefaultSetting = {
         'c',
     ],
     ACTION_NAME_FORMAT: 'JSR $name ($description)',
+    ACTION_PATTERN: '**',
 };
 
 // 插件进程传递给webview的事件type

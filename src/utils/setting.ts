@@ -8,15 +8,20 @@ const DEFAULT_SETTING = {
     actionLanguages: DefaultSetting.ACTION_LANGUAGES,
     actionIgnoreCommands: DefaultSetting.NONE,
     actionFormat: DefaultSetting.ACTION_NAME_FORMAT,
+    actionPattern: DefaultSetting.ACTION_PATTERN,
 };
 
 export function getSetting(): ReplaceSetting {
-    const setting = vscode.workspace.getConfiguration(Command.EXTENSION_NAME).get('setting');
+    const setting = vscode.workspace
+        .getConfiguration(Command.EXTENSION_NAME)
+        .get('setting');
     return setting || DEFAULT_SETTING;
 }
 
 export function getCommands() {
-    const group = vscode.workspace.getConfiguration(Command.EXTENSION_NAME).get('commands') as ReplaceGroup;
+    const group = vscode.workspace
+        .getConfiguration(Command.EXTENSION_NAME)
+        .get('commands') as ReplaceGroup;
     if (!group?.length) {
         return;
     }
@@ -25,6 +30,8 @@ export function getCommands() {
 
 export function getActionCommands() {
     let actionIgnoreCommands = getSetting().actionIgnoreCommands || [];
-    let commands = getCommands()?.filter((i) => !actionIgnoreCommands?.includes(i.name));
+    let commands = getCommands()?.filter(
+        (i) => !actionIgnoreCommands?.includes(i.name)
+    );
     return commands;
 }
