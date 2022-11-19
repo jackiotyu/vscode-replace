@@ -17,7 +17,9 @@
                 placeholder="匹配"
                 class="matching"
             ></vscode-text-area>
-            <vscode-button @click="triggerAdd">匹配</vscode-button>
+            <vscode-button class="matchingBtn" @click="triggerAdd"
+                >匹配</vscode-button
+            >
         </div>
         <div class="flexBox topButMargin">
             <vscode-text-area
@@ -43,6 +45,12 @@
             />
         </div>
         <div class="buttonBox topButMargin">
+            <input
+                class="setRuleName"
+                type="text"
+                v-model="setRuleName"
+                placeholder="请输入预设规则名"
+            />
             <vscode-button class="btnLeftMargin">保存预设</vscode-button>
             <vscode-button class="btnLeftMargin">替换</vscode-button>
         </div>
@@ -54,7 +62,6 @@
                 >个结果</span
             >
         </div>
-
         <div class="resultList"></div>
     </div>
 </template>
@@ -81,6 +88,8 @@ export default {
         let replaceText = ref<string>();
         let includeFile = ref<string>();
         let excludeFile = ref<string>();
+        let setRuleName = ref<string>();
+
         let filesNum = ref<number>(0);
         let matchesNum = ref<number>(0);
         // Bus.on('extMsg', (message) => {
@@ -119,6 +128,7 @@ export default {
             excludeFile,
             filesNum,
             matchesNum,
+            setRuleName,
             triggerAdd,
             commands,
             currentCommand,
@@ -134,6 +144,7 @@ export default {
 
 .btnLeftMargin {
     margin-left: 6px;
+    height: 29px;
 }
 
 .mainBox {
@@ -150,7 +161,10 @@ export default {
         width: 100%;
         background-color: #1d1f23;
     }
-
+    .matchingBtn {
+        height: 29px;
+        margin: auto 0px;
+    }
     .flexBox {
         display: flex;
         justify-content: space-between;
@@ -161,10 +175,12 @@ export default {
         margin-right: 6px;
         height: 50px;
     }
+
     .replaceText {
         flex: 1;
         height: 50px;
     }
+
     .place {
         display: inline-block;
         margin-bottom: 4px;
@@ -175,6 +191,10 @@ export default {
     .buttonBox {
         display: flex;
         justify-content: flex-end;
+        .setRuleName {
+            height: 29px;
+            flex: 1;
+        }
     }
 
     .textActive {
