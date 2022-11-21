@@ -3,7 +3,7 @@
 	"name": "js-replace",
 	"displayName": "JS Replace",
 	"description": "Replace the matching content with a JS statement(使用js语句替换匹配的内容)",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
@@ -32,24 +32,6 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "ReplaceExplorer",
-					"icon": "images/icon.png",
-					"title": "JS Replace"
-				}
-			]
-		},
-		"views": {
-			"ReplaceExplorer": [
-				{
-					"id": "panel:webview",
-					"name": "webview",
-					"type": "webview"
-				}
-			]
-		},
 		"commands": [
 			{
 				"command": "jsReplace.replace",
