@@ -24,6 +24,15 @@ export function isReg(reg: string): boolean {
 }
 
 /**
+ * 判断是否为null或undefined
+ * @param str
+ * @returns
+ */
+export function isNullOrUndefined(str: any): str is undefined | null {
+    return str === null || str === undefined;
+}
+
+/**
  * 生成id
  * @returns id
  */

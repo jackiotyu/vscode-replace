@@ -17,7 +17,7 @@
                 placeholder="匹配"
                 class="matching"
             ></vscode-text-area>
-            <vscode-button class="matchingBtn" @click="triggerAdd"
+            <vscode-button class="matchingBtn" @click="triggerMatch"
                 >匹配</vscode-button
             >
         </div>
@@ -33,6 +33,7 @@
             <input
                 type="text"
                 v-model="includeFile"
+                @input="changeIncludeExp"
                 placeholder="例如*.ts、src/"
             />
         </div>
@@ -41,6 +42,7 @@
             <input
                 type="text"
                 v-model="excludeFile"
+                @input="changeExcludeExp"
                 placeholder="例如*.ts、src/"
             />
         </div>
@@ -48,11 +50,13 @@
             <input
                 class="setRuleName"
                 type="text"
-                v-model="setRuleName"
+                v-model="currentRuleName"
                 placeholder="请输入预设规则名"
             />
             <vscode-button class="btnLeftMargin">保存预设</vscode-button>
-            <vscode-button class="btnLeftMargin">替换</vscode-button>
+            <vscode-button class="btnLeftMargin" @click="triggerReplace"
+                >替换</vscode-button
+            >
         </div>
         <div class="flexBox topButMargin">
             <span>
@@ -62,7 +66,6 @@
                 >个结果</span
             >
         </div>
-        <div class="resultList"></div>
     </div>
 </template>
 
@@ -70,12 +73,10 @@
 // import { getBaseUri } from '@/utils/common';
 import { ref, watch } from 'vue';
 import Bus, { sendMsg } from '@/utils/eventBus';
-import {
-    WebviewMsgType,
-    // ExtMsgType
-} from '@ext/src/constants';
+import { MsgType } from '@ext/src/constants';
 import { genID } from '@ext/src/utils/utils';
 import { ReplaceCommand } from '@ext/src/common';
+import { debounce } from 'lodash';
 // import { vscode } from '@/utils/common';
 // const baseUri = getBaseUri();
 
@@ -88,39 +89,72 @@ export default {
         let replaceText = ref<string>();
         let includeFile = ref<string>();
         let excludeFile = ref<string>();
-        let setRuleName = ref<string>();
+        let currentRuleName = ref<string>();
 
         let filesNum = ref<number>(0);
         let matchesNum = ref<number>(0);
-        // Bus.on('extMsg', (message) => {
-        //     console.log('🚀 message >>', message);
-        //     if (message.type === ExtMsgType.COMMANDS) {
-        //         commands.value = message.value || [];
-        //         return;
-        //     }
-        // });
 
-        function triggerAdd() {
-            Bus.emit('sendExt', { type: WebviewMsgType.RELOAD, id: genID() });
+        // 发送匹配命令
+        function triggerMatch() {
+            sendMsg({
+                type: MsgType.MATCH,
+                id: genID(),
+                value: currentMatch.value,
+            });
         }
 
-        // Bus.emit('sendExt', { type: WebviewMsgType.COMMANDS, id: genID() });
+        // 发送替换命令
+        function triggerReplace() {
+            sendMsg({
+                type: MsgType.REPLACE,
+                id: genID(),
+                value: replaceText.value,
+            });
+        }
 
-        watch(currentCommand, (currentCommand) => {
-            console.log('🚀 currentCommand >>', currentCommand);
-            let command = (commands.value || []).find(
-                (item) => item.name === currentCommand
-            );
-            currentMatch.value = command?.match;
-            // Bus.emit('sendExt', {})
+        const changeIncludeExp = debounce(() => {
+            sendMsg({
+                type: MsgType.INCLUDE,
+                id: genID(),
+                value: includeFile.value,
+            });
+        }, 300);
+        const changeExcludeExp = debounce(() => {
+            sendMsg({
+                type: MsgType.EXCLUDE,
+                id: genID(),
+                value: excludeFile.value,
+            });
+        }, 300);
+
+        watch(
+            currentCommand,
+            (currentCommand) => {
+                let command = (commands.value || []).find(
+                    (item) => item.name === currentCommand
+                );
+                currentMatch.value = command?.match;
+                replaceText.value = command?.replace;
+                // Bus.emit('sendExt', {})
+            },
+            { immediate: true }
+        );
+
+        sendMsg({ type: MsgType.COMMANDS, id: genID() }).then((message) => {
+            console.log(message, 'res');
+            commands.value = message.value || [];
+            currentCommand.value = commands.value?.[0]?.name;
+            sendMsg({
+                type: MsgType.MATCH,
+                id: genID(),
+                value: currentMatch.value,
+            });
         });
 
-        sendMsg({ type: WebviewMsgType.COMMANDS, id: genID() }).then(
-            (message) => {
-                console.log(message, 'res');
-                commands.value = message.value || [];
-            }
-        );
+        Bus.on('matchResultMsg', (data) => {
+            filesNum.value = data?.value?.count || 0;
+            matchesNum.value = data?.value?.count || 0;
+        });
 
         return {
             replaceText,
@@ -128,8 +162,11 @@ export default {
             excludeFile,
             filesNum,
             matchesNum,
-            setRuleName,
-            triggerAdd,
+            currentRuleName,
+            triggerMatch,
+            triggerReplace,
+            changeIncludeExp,
+            changeExcludeExp,
             commands,
             currentCommand,
             currentMatch,
@@ -199,11 +236,6 @@ export default {
 
     .textActive {
         color: rgb(0, 189, 247);
-    }
-
-    .resultList {
-        background-color: #1d1f23;
-        flex: 1;
     }
 }
 </style>

@@ -37,7 +37,7 @@
 				{
 					"id": "ReplaceExplorer",
 					"icon": "images/icon.svg",
-					"title": "JS Replace"
+					"title": "%ext.viewsContainers.activitybar.title%"
 				}
 			]
 		},
@@ -45,8 +45,13 @@
 			"ReplaceExplorer": [
 				{
 					"id": "panel:webview",
-					"name": "webview",
+					"name": "%ext.views.ReplaceExplorer.webview.title%",
 					"type": "webview"
+				},
+				{
+					"id": "panel:result",
+					"name": "%ext.views.ReplaceExplorer.result.title%",
+					"type": "tree"
 				}
 			]
 		},
@@ -217,6 +222,7 @@
 		"@types/change-case": "^2.3.1",
 		"@types/fs-extra": "^9.0.13",
 		"change-case": "^4.1.2",
-		"fs-extra": "^10.1.0"
+		"fs-extra": "^10.1.0",
+		"isbinaryfile": "^5.0.0"
 	}
 }

@@ -1,20 +1,19 @@
-import * as vscode from 'vscode';
+import { WebviewView } from 'vscode';
 import {
-    WebviewMsgType,
-    ExtMsgType,
     WebviewPayloadType,
     ExtCommandsPayload,
     ExtPayloadType,
+    MsgType,
 } from './constants';
 import { getCommands } from './utils/setting';
-// import { genID } from './utils/utils';
+import GlobalReplace from './globalReplace';
 
 /**
  * 发送内容给webview，规范payload格式
  * @param webviewView
  * @param payload
  */
-function postMessage(webviewView: vscode.WebviewView, payload: ExtPayloadType) {
+function postMessage(webviewView: WebviewView, payload: ExtPayloadType) {
     webviewView.webview.postMessage(payload);
 }
 
@@ -27,19 +26,19 @@ function postMessage(webviewView: vscode.WebviewView, payload: ExtPayloadType) {
  */
 export default async function WebviewEventHandler(
     { type, value, id }: WebviewPayloadType,
-    webviewView: vscode.WebviewView,
+    webviewView: WebviewView,
     reloadCallback: Function
 ) {
     // 处理reload事件
-    if (type === WebviewMsgType.RELOAD) {
+    if (type === MsgType.RELOAD) {
         reloadCallback();
         return;
     }
 
     // 处理获取commands事件
-    if (type === WebviewMsgType.COMMANDS) {
+    if (type === MsgType.COMMANDS) {
         const payload: ExtCommandsPayload = {
-            type: ExtMsgType.COMMANDS,
+            type: MsgType.COMMANDS,
             value: getCommands(),
             id,
         };
@@ -47,12 +46,25 @@ export default async function WebviewEventHandler(
         return;
     }
 
-    if (type === WebviewMsgType.MATCH) {
+    if (type === MsgType.MATCH) {
         // TODO 需要匹配字符串
+        GlobalReplace.match(value);
+        postMessage(webviewView, { id, type: MsgType.MATCH, value: 'ok' });
         return;
     }
 
-    if (type === 'error') {
-        vscode.window.showErrorMessage(value);
+    if (type === MsgType.REPLACE) {
+        GlobalReplace.replace(value);
+        postMessage(webviewView, { id, type: MsgType.REPLACE, value: 'ok' });
+    }
+
+    if (type === MsgType.INCLUDE) {
+        GlobalReplace.include(value);
+        postMessage(webviewView, { id, type: MsgType.INCLUDE, value: 'ok' });
+    }
+
+    if (type === MsgType.EXCLUDE) {
+        GlobalReplace.exclude(value);
+        postMessage(webviewView, { id, type: MsgType.EXCLUDE, value: 'ok' });
     }
 }

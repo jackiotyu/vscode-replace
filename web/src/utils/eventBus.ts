@@ -1,11 +1,25 @@
 import mitt from 'mitt';
 import { vscode } from './common';
-import { ExtPayloadType, WebviewPayloadType } from '@ext/src/constants';
+import {
+    ExtPayloadType,
+    WebviewPayloadType,
+    WebviewReloadMsg,
+    ExtDefaultPayload,
+    WebviewMatchMsg,
+    WebviewCommandsMsg,
+    ExtCommandsPayload,
+    WebviewReplaceMsg,
+    MsgType,
+    WebviewIncludeMsg,
+    WebviewExcludeMsg,
+    ExtMatchResultPayload,
+} from '@ext/src/constants';
 
+// 规定信息格式
 type Events = {
     sendExt: WebviewPayloadType;
-    // TODO 规定信息格式
     extMsg: ExtPayloadType;
+    matchResultMsg: ExtMatchResultPayload;
 };
 
 const Bus = mitt<Events>();
@@ -13,7 +27,11 @@ const Bus = mitt<Events>();
 // 从插件进程发过来的消息
 // 监听方式：Bus.on('extMsg', e)
 window.onmessage = (e) => {
-    if (e.data.type) {
+    const data = e.data;
+    if (data && 'id' in data && 'type' in data) {
+        if (data.type === MsgType.MATCH_RESULT) {
+            return Bus.emit('matchResultMsg', e.data);
+        }
         Bus.emit('extMsg', e.data);
     }
 };
@@ -24,13 +42,35 @@ Bus.on('sendExt', (event) => {
     vscode.postMessage(event);
 });
 
-export function sendMsg(message: WebviewPayloadType) {
-    return new Promise<ExtPayloadType>((resolve) => {
+/**
+ * 发送消息给插件进程
+ * @param message 消息内容
+ * @returns
+ */
+export function sendMsg(
+    message: WebviewCommandsMsg
+): Promise<ExtCommandsPayload>;
+export function sendMsg(
+    message:
+        | WebviewMatchMsg
+        | WebviewReplaceMsg
+        | WebviewIncludeMsg
+        | WebviewExcludeMsg
+): Promise<ExtDefaultPayload>;
+export function sendMsg(message: WebviewReloadMsg): Promise<void>;
+export function sendMsg<U extends WebviewPayloadType, T extends ExtPayloadType>(
+    message: U
+) {
+    return new Promise<T | void>((resolve) => {
         Bus.emit('sendExt', message);
+
+        if (message.type === MsgType.RELOAD) {
+            return resolve();
+        }
 
         const cb = (data: any) => {
             console.log('e', data);
-            if (data.id === message.id) {
+            if ('id' in data && data.id === message.id) {
                 resolve(data);
                 Bus.off('extMsg', cb);
             }

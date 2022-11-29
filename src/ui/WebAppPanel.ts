@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import WebviewEventHandler from '../eventHandler';
-// import { getNonce } from './getNonce';
+import { MatchResultEvent } from '../event';
+import { genID } from '../utils/utils';
+import { MsgType } from '../constants';
 
 export class WebViewPanelProvider implements vscode.WebviewViewProvider {
     private webviewView?: vscode.WebviewView;
@@ -26,6 +28,13 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
             if ('type' in e && 'id' in e) {
                 WebviewEventHandler(e, webviewView, reloadCallback);
             }
+        });
+        MatchResultEvent.event((data) => {
+            webviewView.webview.postMessage({
+                id: genID(),
+                type: MsgType.MATCH_RESULT,
+                value: data,
+            });
         });
         this._disposables.push(disposable);
     }
