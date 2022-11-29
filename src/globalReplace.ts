@@ -1,7 +1,10 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent } from './event';
 import { isNullOrUndefined } from './utils/utils';
+import { MatchResultItem } from './constants';
 import { isBinaryFileSync } from 'isbinaryfile';
+import { getRange } from './utils/getRange';
+import { readFile } from 'fs/promises';
 
 function canWrite() {
     return vscode.workspace.fs.isWritableFileSystem('file');
@@ -16,15 +19,9 @@ class GlobalReplace {
     async match(exp?: string) {
         this.matchExp = isNullOrUndefined(exp) ? '' : exp;
         if (isNullOrUndefined(exp) || !canWrite()) {
-            MatchResultEvent.fire({
-                count: 0,
-                file: 0,
-                list: [],
-            });
+            MatchResultEvent.fire({ count: 0, file: 0, list: [] });
             return;
         }
-        // TODO 遍历文件
-        console.log('🚀 match >>', exp);
         const MAX_FILE_SIZE = 10000;
         let uriList = await vscode.workspace.findFiles(
             this.includeExp,
@@ -35,36 +32,57 @@ class GlobalReplace {
         //     return vscode.workspace.fs.stat(item).
         // })
 
-        // TODO 排除二进制文件
-        // TODO 匹配文件
-        let res: vscode.Uri[] = [];
+        let fileUriList: vscode.Uri[] = [];
 
+        // 排除二进制和不可写入的文件
         await Promise.all(
             uriList.map(async (item) => {
                 try {
                     let stat = await vscode.workspace.fs.stat(item);
-                    console.log('🚀 stat >>', stat);
                     if (
                         stat.permissions !== vscode.FilePermission.Readonly &&
                         !isBinaryFileSync(item.fsPath)
                     ) {
-                        res.push(item);
+                        // TODO 保持顺序
+                        fileUriList.push(item);
+                    }
+                } catch (error) {}
+            })
+        );
+
+        let matchResultList: MatchResultItem[] = [];
+
+        // TODO 匹配文件
+        await Promise.all(
+            fileUriList.map(async (item) => {
+                try {
+                    const file = await readFile(item.fsPath, 'utf8');
+                    const range = getRange(file, this.matchExp);
+                    if (range.length) {
+                        matchResultList.push({
+                            uri: item,
+                            range,
+                        });
+                        console.log('🚀 range >>', range);
                     }
                 } catch (error) {}
             })
         );
 
         MatchResultEvent.fire({
-            count: res.length,
-            file: res.length,
-            list: res,
+            count: matchResultList.reduce(
+                (count, item) => count + item.range?.length,
+                0
+            ),
+            file: matchResultList.length,
+            list: matchResultList,
         });
-        console.log('🚀 res >>', res);
-        return '111';
+        console.log('🚀 res >>', fileUriList);
     }
     async replace(exp?: string) {
         this.replaceExp = isNullOrUndefined(exp) ? '' : exp;
         if (isNullOrUndefined(exp) || !canWrite()) return [];
+        // TODO 执行替换
         console.log('🚀 replace >>', exp);
     }
     async exclude(exp?: vscode.GlobPattern) {

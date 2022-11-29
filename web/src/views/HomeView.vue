@@ -144,6 +144,7 @@ export default {
             console.log(message, 'res');
             commands.value = message.value || [];
             currentCommand.value = commands.value?.[0]?.name;
+            currentRuleName.value = currentCommand.value;
             sendMsg({
                 type: MsgType.MATCH,
                 id: genID(),
@@ -152,7 +153,7 @@ export default {
         });
 
         Bus.on('matchResultMsg', (data) => {
-            filesNum.value = data?.value?.count || 0;
+            filesNum.value = data?.value?.file || 0;
             matchesNum.value = data?.value?.count || 0;
         });
 

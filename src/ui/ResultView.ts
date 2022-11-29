@@ -1,12 +1,22 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent } from '../event';
+import { MatchResult, MatchResultItem, rangeItem } from '../constants';
+import { url } from 'inspector';
 
-class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+class FileNode extends vscode.TreeItem {
+    range: rangeItem[] = [];
+}
+
+class TextNode extends vscode.TreeItem {}
+
+type TreeNode = FileNode | TextNode;
+
+class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     private _onDidChangeTreeData: vscode.EventEmitter<any> =
         new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> =
         this._onDidChangeTreeData.event;
-    private TreeData: vscode.Uri[] = [];
+    private TreeData: MatchResultItem[] = [];
 
     constructor() {
         MatchResultEvent.event((data) => {
@@ -15,31 +25,36 @@ class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
         });
     }
 
+    // 获取子级
     getChildren(
-        element?: vscode.TreeItem | undefined
+        element?: FileNode | undefined
     ): vscode.ProviderResult<vscode.TreeItem[]> {
-        return this.TreeData.map((item) => {
-            let treeItem = new vscode.TreeItem(item.path);
-            treeItem.tooltip = item.path;
-            treeItem.resourceUri = item;
+        if (element === undefined) {
+            return this.TreeData.map((item) => {
+                const { uri, range } = item;
+                let treeItem = new FileNode(
+                    uri,
+                    vscode.TreeItemCollapsibleState.Expanded
+                );
+                treeItem.tooltip = uri.path;
+                treeItem.range = range;
+                treeItem.iconPath = vscode.ThemeIcon.File;
+                return treeItem;
+            });
+        }
+
+        return element.range.map((item) => {
+            const { text, start, end, group } = item;
+            let treeItem = new vscode.TreeItem(text);
+            treeItem.tooltip = text;
+            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
             return treeItem;
         });
-
-        // let treeItem = new vscode.TreeItem('结果区');
-        // treeItem.tooltip = '替换结果';
-        // treeItem.description = '替换结果';
-        // return [treeItem, treeItem, treeItem];
     }
-    getTreeItem(
-        element: vscode.TreeItem
-    ): vscode.TreeItem | Thenable<vscode.TreeItem> {
+
+    // 构造tree节点
+    getTreeItem(element: TreeNode): TreeNode | Thenable<TreeNode> {
         return element;
-    }
-
-    getParent(
-        element: vscode.TreeItem
-    ): vscode.ProviderResult<vscode.TreeItem> {
-        return null;
     }
 }
 

@@ -32,13 +32,27 @@ export const DefaultSetting = {
     ACTION_NAME_FORMAT: 'JSR $name ($description)',
 };
 
+/** 匹配到的内容，记录范围数据 */
+export interface rangeItem {
+    start: number;
+    end: number;
+    group: string[];
+    text: string;
+}
+
+/** 用于构建treeView */
+export interface MatchResultItem {
+    uri: vscode.Uri;
+    range: rangeItem[];
+}
+
 /** 搜索到的结果 */
 export interface MatchResult {
     /** 文件数 */
     file: number;
     /** 可替换的计数 */
     count: number;
-    list: vscode.Uri[];
+    list: MatchResultItem[];
 }
 
 // webview与插件进程的事件type，统一管理
