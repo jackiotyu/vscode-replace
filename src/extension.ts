@@ -22,10 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
         Command.DOC_REPLACE_EVENT,
         async (uri: vscode.Uri, rangeItem: RangeItem) => {
             let document = await vscode.workspace.openTextDocument(uri);
-            const currentRange = createRangeByRangeItem(rangeItem);
             let docText = document.getText();
+            // TODO 添加缓存
+            // TODO 监听文档修改事件
+
             // 直接获取替换的完整文本
-            const replaceText = docText.replace(
+            let replaceText = docText.replace(
                 RegExp(GlobalReplace.getMatchExp(), 'mg'),
                 (text, ...args) => {
                     return getReplaceText(
@@ -35,18 +37,19 @@ export function activate(context: vscode.ExtensionContext) {
                     );
                 }
             );
-
             let replaceUri = vscode.Uri.from({
                 scheme: EXTENSION_SCHEME,
                 fragment: replaceText,
                 path: uri.path,
             });
 
+            const currentRange = createRangeByRangeItem(rangeItem);
+
             vscode.commands.executeCommand(
                 'vscode.diff',
                 uri,
                 replaceUri,
-                `${document.fileName} ↔ ${document.fileName} (Replace Preview)`
+                `${document.fileName} ↔ ${document.fileName} (JS Replace Preview)`
             );
         }
     );

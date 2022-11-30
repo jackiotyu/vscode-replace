@@ -38,7 +38,6 @@ class GlobalReplace {
         let forceStop = false;
         try {
             stopEvent = StopMatchEvent.event(() => {
-                console.log('🚀 强制退出 >>');
                 forceStop = true;
             });
 
@@ -239,6 +238,10 @@ class GlobalReplace {
         if (this.matchExp !== '') {
             return this.match(this.matchExp);
         }
+    }
+    clearMatch() {
+        this.matchResult = { count: 0, file: 0, map: new Map() };
+        MatchResultEvent.fire(this.matchResult);
     }
 }
 

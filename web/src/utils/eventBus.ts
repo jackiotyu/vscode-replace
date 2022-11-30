@@ -15,6 +15,7 @@ import {
     WebviewStopMatchMsg,
     WebviewChangeReplaceMsg,
     WebviewSaveRuleMsg,
+    WebviewClearMatchMsg,
     ExtMatchResultPayload,
 } from '@ext/src/constants';
 
@@ -66,6 +67,7 @@ export function sendMsg(
         | WebviewChangeReplaceMsg
         | WebviewStopMatchMsg
         | WebviewSaveRuleMsg
+        | WebviewClearMatchMsg
 ): Promise<ExtDefaultPayload>;
 export function sendMsg(message: WebviewReloadMsg): Promise<void>;
 export function sendMsg<U extends WebviewPayloadType, T extends ExtPayloadType>(

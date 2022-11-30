@@ -92,4 +92,9 @@ export default async function WebviewEventHandler(
         await saveRule(value);
         postMessage(webviewView, { id, type: MsgType.SAVE_RULE, value: 'ok' });
     }
+
+    if (type === MsgType.CLEAR_MATCH) {
+        GlobalReplace.clearMatch();
+        postMessage(webviewView, { id, type: MsgType.CLEAR_MATCH });
+    }
 }

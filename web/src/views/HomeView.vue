@@ -185,7 +185,10 @@ export default {
                 currentMatch.value = command?.match;
                 replaceText.value = command?.replace;
                 currentRuleName.value = currentCommandName;
-                // Bus.emit('sendExt', {})
+                sendMsg({
+                    type: MsgType.CLEAR_MATCH,
+                    id: genID(),
+                });
             },
             { immediate: true }
         );

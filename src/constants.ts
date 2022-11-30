@@ -66,7 +66,7 @@ export interface MatchResult {
 export enum MsgType {
     /** 重载页面 */
     RELOAD = 'reload',
-    // 注册的命令
+    /** 注册的命令 */
     COMMANDS = 'commands',
     /** 匹配 */
     MATCH = 'match',
@@ -84,6 +84,8 @@ export enum MsgType {
     STOP_MATCH = 'stopMatch',
     /** 保存规则 */
     SAVE_RULE = 'saveRule',
+    /** 清除匹配结果 */
+    CLEAR_MATCH = 'clearMatch',
 }
 
 // webview进程的type
@@ -91,48 +93,35 @@ export type MsgKey = `${MsgType}`;
 
 export type MessageKey = MsgKey;
 
-// 生成插件进程的payload
-export type GenExtPayload<T extends MsgKey, K> = {
-    id: string;
-    type: T;
-    value?: K;
-};
-
-// 生成webview进程的payload
-export type GenWebviewPayload<T extends MsgKey, K> = {
+// 生成插件进程和webview进程的payload
+export type GenPayload<T extends MsgKey, K> = {
     id: string;
     type: T;
     value?: K;
 };
 
 // 插件进程发送给webview的数据格式
-export type ExtCommandsPayload = GenExtPayload<
-    MsgType.COMMANDS,
-    ReplaceCommand[]
->;
-export type ExtDefaultPayload = GenExtPayload<MessageKey, 'ok' | 'error'>;
-export type ExtMatchResultPayload = GenExtPayload<
+export type ExtCommandsPayload = GenPayload<MsgType.COMMANDS, ReplaceCommand[]>;
+export type ExtDefaultPayload = GenPayload<MessageKey, 'ok' | 'error'>;
+export type ExtMatchResultPayload = GenPayload<
     MsgType.MATCH_RESULT,
     Exclude<MatchResult, MatchResultMap>
 >;
 
 // webview发送给插件进程的数据格式
-export type WebviewReloadMsg = GenWebviewPayload<MsgType.RELOAD, undefined>;
-export type WebviewCommandsMsg = GenWebviewPayload<MsgType.COMMANDS, undefined>;
-export type WebviewMatchMsg = GenWebviewPayload<MsgType.MATCH, string>;
-export type WebviewReplaceMsg = GenWebviewPayload<MsgType.REPLACE, string>;
-export type WebviewIncludeMsg = GenWebviewPayload<MsgType.INCLUDE, string>;
-export type WebviewExcludeMsg = GenWebviewPayload<MsgType.EXCLUDE, string>;
-export type WebviewChangeReplaceMsg = GenWebviewPayload<
+export type WebviewReloadMsg = GenPayload<MsgType.RELOAD, undefined>;
+export type WebviewCommandsMsg = GenPayload<MsgType.COMMANDS, undefined>;
+export type WebviewMatchMsg = GenPayload<MsgType.MATCH, string>;
+export type WebviewReplaceMsg = GenPayload<MsgType.REPLACE, string>;
+export type WebviewIncludeMsg = GenPayload<MsgType.INCLUDE, string>;
+export type WebviewExcludeMsg = GenPayload<MsgType.EXCLUDE, string>;
+export type WebviewChangeReplaceMsg = GenPayload<
     MsgType.CHANGE_REPLACE,
     string
 >;
-export type WebviewStopMatchMsg = GenWebviewPayload<
-    MsgType.STOP_MATCH,
-    undefined
->;
+export type WebviewStopMatchMsg = GenPayload<MsgType.STOP_MATCH, undefined>;
 export type WebviewSaveRuleMsg = Required<
-    GenWebviewPayload<
+    GenPayload<
         MsgType.SAVE_RULE,
         {
             rule: ReplaceCommand;
@@ -140,6 +129,7 @@ export type WebviewSaveRuleMsg = Required<
         }
     >
 >;
+export type WebviewClearMatchMsg = GenPayload<MsgType.CLEAR_MATCH, undefined>;
 
 // webview发送给插件进程的数据格式
 export type WebviewPayloadType =
@@ -151,7 +141,8 @@ export type WebviewPayloadType =
     | WebviewExcludeMsg
     | WebviewChangeReplaceMsg
     | WebviewStopMatchMsg
-    | WebviewSaveRuleMsg;
+    | WebviewSaveRuleMsg
+    | WebviewClearMatchMsg;
 
 // 插件进程发送给webview的数据格式
 export type ExtPayloadType =
