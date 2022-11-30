@@ -20,6 +20,7 @@ class GlobalReplace {
     protected includeExp: vscode.GlobPattern = '';
     protected matchExp: string = '';
     protected replaceExp: string = '';
+    /** 匹配结果 */
     protected matchResult: MatchResult = { count: 0, file: 0, map: new Map() };
 
     /** 提供给外部读取 */
@@ -57,7 +58,7 @@ class GlobalReplace {
 
             // 排除二进制和不可写入的文件
             await Promise.all(
-                uriList.map(async (item) => {
+                uriList.map(async (item, index) => {
                     if (forceStop) {
                         throw new Error('强制退出');
                     }
@@ -65,14 +66,14 @@ class GlobalReplace {
                         let stat = await vscode.workspace.fs.stat(item);
                         if (
                             stat.permissions !==
-                                vscode.FilePermission.Readonly &&
+                            vscode.FilePermission.Readonly &&
                             !isBinaryPath(item.fsPath) &&
                             !isBinaryFileSync(item.fsPath)
                         ) {
                             // TODO 保持顺序
                             fileUriList.push(item);
                         }
-                    } catch (error) {}
+                    } catch (error) { }
                 })
             );
 
@@ -94,7 +95,7 @@ class GlobalReplace {
                                 range,
                             });
                         }
-                    } catch (error) {}
+                    } catch (error) { }
                 })
             );
 
@@ -147,9 +148,7 @@ class GlobalReplace {
                 workspaceEdit.replace(item.uri, range, newText);
             });
             this.matchResult.map.delete(item.uri);
-            this.matchResult.count = Array.from(
-                this.matchResult.map.values()
-            ).reduce((count, item) => count + item.range.length, 0);
+            this.matchResult.count -= item.range.length;
             this.matchResult.file = this.matchResult.map.size;
             // 更新 tree view
             MatchResultEvent.fire(this.matchResult);

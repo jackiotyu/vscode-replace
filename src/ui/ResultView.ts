@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { MatchResultEvent } from '../event';
+import { MatchResultEvent, SelectOptionEvent } from '../event';
 import { MatchResult, MatchResultItem, RangeItem, Command } from '../constants';
 import { url } from 'inspector';
 
@@ -8,7 +8,7 @@ class FileNode extends vscode.TreeItem {
     replaceText: string = '';
 }
 
-class TextNode extends vscode.TreeItem {}
+class TextNode extends vscode.TreeItem { }
 
 type TreeNode = FileNode | TextNode;
 
@@ -18,9 +18,14 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     readonly onDidChangeTreeData: vscode.Event<any> =
         this._onDidChangeTreeData.event;
     private TreeData: MatchResultItem[] = [];
+    protected forceStop: boolean = false;
 
     constructor() {
+        SelectOptionEvent.event(() => {
+            this.forceStop = true;
+        });
         MatchResultEvent.event((data) => {
+            this.forceStop = false;
             this.TreeData = Array.from(data.map.values());
             this._onDidChangeTreeData.fire(undefined);
         });
@@ -31,12 +36,19 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     getChildren(
         element?: FileNode | undefined
     ): vscode.ProviderResult<vscode.TreeItem[]> {
+        if (this.forceStop) {
+            return;
+        }
+        // 文件
         if (element === undefined) {
             return this.TreeData.map((item) => {
                 const { uri, range } = item;
+
                 let treeItem = new FileNode(
                     uri,
-                    vscode.TreeItemCollapsibleState.Expanded
+                    range.length <= 20
+                        ? vscode.TreeItemCollapsibleState.Expanded
+                        : vscode.TreeItemCollapsibleState.Collapsed
                 );
                 treeItem.tooltip = uri.path;
                 treeItem.range = range;
@@ -45,10 +57,12 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
             });
         }
 
+        // 具体匹配位置
         return element.range.map((item) => {
             const { text } = item;
             let treeItem = new vscode.TreeItem(text);
-            treeItem.tooltip = text;
+            // TODO 展示当前行的匹配位置
+            treeItem.tooltip = new vscode.MarkdownString('*' + `${text}` + '*');
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
             treeItem.command = {
                 command: Command.DOC_REPLACE_EVENT,
@@ -60,8 +74,11 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     // 构造tree节点
-    getTreeItem(element: TreeNode): TreeNode | Thenable<TreeNode> {
-        return element;
+    getTreeItem(element: TreeNode): Thenable<TreeNode> {
+        if (this.forceStop) {
+            return Promise.reject();
+        }
+        return Promise.resolve(element);
     }
 }
 

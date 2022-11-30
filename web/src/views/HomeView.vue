@@ -148,6 +148,8 @@ export default {
                     value: {
                         rule: {
                             ...currentCommand.value,
+                            match: currentMatch.value || '',
+                            replace: replaceText.value || '',
                             name: currentRuleName.value,
                         },
                         oldRuleName: currentCommandName.value,
@@ -193,13 +195,16 @@ export default {
             { immediate: true }
         );
 
-        watch(replaceText, (replaceText) => {
-            sendMsg({
-                type: MsgType.CHANGE_REPLACE,
-                id: genID(),
-                value: replaceText,
-            });
-        });
+        watch(
+            replaceText,
+            debounce((replaceText: string | undefined) => {
+                sendMsg({
+                    type: MsgType.CHANGE_REPLACE,
+                    id: genID(),
+                    value: replaceText,
+                });
+            }, 300)
+        );
 
         function commandsCallback(message: ExtCommandsPayload) {
             let newCommands = message.value || [];
@@ -212,7 +217,6 @@ export default {
                 currentCommand.value = commands.value?.[0];
             }
             commands.value = newCommands;
-
             let commandName = currentCommandName.value;
             currentCommandName.value = undefined;
             nextTick(() => {
