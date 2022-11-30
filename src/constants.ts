@@ -9,6 +9,8 @@ export enum Command {
     DOC_REPLACE_EVENT = 'jsReplace.DocReplace',
 }
 
+export const EXTENSION_SCHEME = 'jsReplaceTemp';
+
 export const DefaultSetting = {
     // 匹配的子串
     MATCH_KEY: '$_',

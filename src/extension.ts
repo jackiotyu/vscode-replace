@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 import { transform } from './main';
 import { ReplaceExplorer } from './ui';
-import { Command, RangeItem } from './constants';
+import { Command, RangeItem, EXTENSION_SCHEME } from './constants';
 import { RegisterCodeAction } from './codeAction';
 import { createRangeByRangeItem } from './utils/getRange';
 import { getReplaceText } from './utils/getReplaceText';
 import GlobalReplace from './globalReplace';
+import WorkspaceAdaptor from './lib/workspace';
+import ContentProvider from './contentProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     // 主要命令
+    // TODO 整合到bootStrapper
     let textTransform = vscode.commands.registerTextEditorCommand(
         Command.REPLACE_EVENT,
         (editor) => {
@@ -33,23 +36,29 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             );
 
-            let replaceDocument = await vscode.workspace.openTextDocument({
-                content: replaceText,
+            let replaceUri = vscode.Uri.from({
+                scheme: EXTENSION_SCHEME,
+                fragment: replaceText,
+                path: uri.path,
             });
 
             vscode.commands.executeCommand(
                 'vscode.diff',
                 uri,
-                replaceDocument.uri,
-                `${document.fileName} ↔ ${document.fileName} (Replace Preview)`,
-                { selection: currentRange }
+                replaceUri,
+                `${document.fileName} ↔ ${document.fileName} (Replace Preview)`
             );
-            // let document = await vscode.workspace.openTextDocument(uri);
-            // vscode.window.showTextDocument(document, {
-            //     selection: range,
-            // });
         }
     );
+
+    let workspaceAdaptor = new WorkspaceAdaptor(vscode.workspace);
+    let contentProvider = new ContentProvider();
+    let disposable = workspaceAdaptor.registerTextDocumentContentProvider(
+        EXTENSION_SCHEME,
+        contentProvider
+    );
+
+    context.subscriptions.push(disposable);
     context.subscriptions.push(textTransform);
     context.subscriptions.push(docReplace);
     // 注册code action
