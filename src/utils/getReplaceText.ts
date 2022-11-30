@@ -15,12 +15,10 @@ import * as ChangeCase from 'change-case';
  * @returns
  */
 export function getReplaceText(
-    command: ReplaceCommand,
+    replace: string | undefined,
     text: string,
     ...args: string[]
 ) {
-    const { replace } = command;
-
     if (replace === '' || replace === undefined) {
         throw new Error(localize('transform.action.replace.confirm'));
     }
@@ -92,7 +90,11 @@ export async function markChange(
         let { originContent, previewRange, group } = item;
         try {
             // FIXME 优化替换
-            let replaceText = getReplaceText(command, originContent, ...group);
+            let replaceText = getReplaceText(
+                command.replace,
+                originContent,
+                ...group
+            );
 
             replaceOperationList.push({
                 text: replaceText,

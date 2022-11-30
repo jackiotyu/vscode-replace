@@ -43,3 +43,21 @@ export function genID() {
         return v.toString(16);
     });
 }
+
+/**
+ * 根据key对数组元素去重
+ * @param array
+ * @param key
+ * @returns
+ */
+export function uniqueListByKey(array: any[], key: string) {
+    let idSet = new Set();
+    let uniqueList = array.reverse().filter((item) => {
+        if (!idSet.has(item[key])) {
+            idSet.add(item[key]);
+            return true;
+        }
+        return false;
+    });
+    return uniqueList.reverse();
+}

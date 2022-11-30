@@ -12,6 +12,9 @@ import {
     MsgType,
     WebviewIncludeMsg,
     WebviewExcludeMsg,
+    WebviewStopMatchMsg,
+    WebviewChangeReplaceMsg,
+    WebviewSaveRuleMsg,
     ExtMatchResultPayload,
 } from '@ext/src/constants';
 
@@ -20,6 +23,7 @@ type Events = {
     sendExt: WebviewPayloadType;
     extMsg: ExtPayloadType;
     matchResultMsg: ExtMatchResultPayload;
+    commands: WebviewCommandsMsg;
 };
 
 const Bus = mitt<Events>();
@@ -31,6 +35,9 @@ window.onmessage = (e) => {
     if (data && 'id' in data && 'type' in data) {
         if (data.type === MsgType.MATCH_RESULT) {
             return Bus.emit('matchResultMsg', e.data);
+        }
+        if (data.type === MsgType.COMMANDS) {
+            Bus.emit('commands', e.data);
         }
         Bus.emit('extMsg', e.data);
     }
@@ -56,6 +63,9 @@ export function sendMsg(
         | WebviewReplaceMsg
         | WebviewIncludeMsg
         | WebviewExcludeMsg
+        | WebviewChangeReplaceMsg
+        | WebviewStopMatchMsg
+        | WebviewSaveRuleMsg
 ): Promise<ExtDefaultPayload>;
 export function sendMsg(message: WebviewReloadMsg): Promise<void>;
 export function sendMsg<U extends WebviewPayloadType, T extends ExtPayloadType>(
@@ -69,7 +79,7 @@ export function sendMsg<U extends WebviewPayloadType, T extends ExtPayloadType>(
         }
 
         const cb = (data: any) => {
-            console.log('e', data);
+            console.log('e', data, message.id, message.type);
             if ('id' in data && data.id === message.id) {
                 resolve(data);
                 Bus.off('extMsg', cb);

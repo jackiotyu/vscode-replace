@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import WebviewEventHandler from '../eventHandler';
 import { MatchResultEvent } from '../event';
 import { genID } from '../utils/utils';
-import { MsgType } from '../constants';
+import { MsgType, Command } from '../constants';
+import { getCommands } from '../utils/setting';
 
 export class WebViewPanelProvider implements vscode.WebviewViewProvider {
     private webviewView?: vscode.WebviewView;
@@ -29,14 +30,30 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
                 WebviewEventHandler(e, webviewView, reloadCallback);
             }
         });
-        MatchResultEvent.event((data) => {
+        const matchResultEventDisposable = MatchResultEvent.event((data) => {
             webviewView.webview.postMessage({
                 id: genID(),
                 type: MsgType.MATCH_RESULT,
-                value: data,
+                value: { count: data.count, file: data.file },
             });
         });
+        // 监听预设命令变化，发送给webview
+        const configurationDisposable =
+            vscode.workspace.onDidChangeConfiguration((e) => {
+                if (e.affectsConfiguration(Command.EXTENSION_NAME)) {
+                    webviewView.webview.postMessage({
+                        id: genID(),
+                        type: MsgType.COMMANDS,
+                        value: getCommands(),
+                    });
+                }
+            });
+        webviewView.onDidDispose(() => {
+            console.log('😀😀 webviewView onDidDispose');
+        });
         this._disposables.push(disposable);
+        this._disposables.push(matchResultEventDisposable);
+        this._disposables.push(configurationDisposable);
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {

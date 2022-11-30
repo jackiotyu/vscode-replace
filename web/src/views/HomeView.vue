@@ -2,7 +2,7 @@
     <div class="mainBox">
         <vscode-dropdown
             class="selectBox topButMargin"
-            v-model="currentCommand"
+            v-model="currentCommandName"
         >
             <vscode-option
                 :value="command.name"
@@ -17,9 +17,9 @@
                 placeholder="匹配"
                 class="matching"
             ></vscode-text-area>
-            <vscode-button class="matchingBtn" @click="triggerMatch"
-                >匹配</vscode-button
-            >
+            <vscode-button class="matchingBtn" @click="triggerMatch">{{
+                isMatching ? '停止匹配' : '匹配'
+            }}</vscode-button>
         </div>
         <div class="flexBox topButMargin">
             <vscode-text-area
@@ -53,12 +53,20 @@
                 v-model="currentRuleName"
                 placeholder="请输入预设规则名"
             />
-            <vscode-button class="btnLeftMargin">保存预设</vscode-button>
-            <vscode-button class="btnLeftMargin" @click="triggerReplace"
+            <vscode-button
+                class="btnLeftMargin"
+                :disabled="!currentRuleName"
+                @click="triggerSaveRule"
+                >保存预设</vscode-button
+            >
+            <vscode-button
+                class="btnLeftMargin"
+                :disabled="isLoading || !filesNum"
+                @click="triggerReplace"
                 >替换</vscode-button
             >
         </div>
-        <div class="flexBox topButMargin">
+        <div class="flexBox topButMargin" v-if="filesNum">
             <span>
                 <span class="textActive">{{ filesNum }} </span>个文件匹配到<span
                     class="textActive"
@@ -71,9 +79,13 @@
 
 <script lang="ts">
 // import { getBaseUri } from '@/utils/common';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import Bus, { sendMsg } from '@/utils/eventBus';
-import { MsgType } from '@ext/src/constants';
+import {
+    ExtCommandsPayload,
+    ExtMatchResultPayload,
+    MsgType,
+} from '@ext/src/constants';
 import { genID } from '@ext/src/utils/utils';
 import { ReplaceCommand } from '@ext/src/common';
 import { debounce } from 'lodash';
@@ -84,23 +96,38 @@ export default {
     name: 'HomeView',
     setup() {
         let commands = ref<ReplaceCommand[]>([]);
-        let currentCommand = ref<string>();
+        let currentCommandName = ref<string>();
         let currentMatch = ref<string>();
         let replaceText = ref<string>();
         let includeFile = ref<string>();
         let excludeFile = ref<string>();
         let currentRuleName = ref<string>();
-
+        // TODO 任务执行中的状态
+        let isLoading = ref<boolean>(false);
+        let isMatching = ref<boolean>(false);
+        let currentCommand = ref<ReplaceCommand>();
         let filesNum = ref<number>(0);
         let matchesNum = ref<number>(0);
 
         // 发送匹配命令
         function triggerMatch() {
-            sendMsg({
-                type: MsgType.MATCH,
-                id: genID(),
-                value: currentMatch.value,
-            });
+            if (isMatching.value) {
+                sendMsg({
+                    type: MsgType.STOP_MATCH,
+                    id: genID(),
+                }).then(() => {
+                    isMatching.value = false;
+                });
+            } else {
+                isMatching.value = true;
+                sendMsg({
+                    type: MsgType.MATCH,
+                    id: genID(),
+                    value: currentMatch.value,
+                }).then(() => {
+                    isMatching.value = false;
+                });
+            }
         }
 
         // 发送替换命令
@@ -111,6 +138,25 @@ export default {
                 value: replaceText.value,
             });
         }
+        // 保存预设
+        function triggerSaveRule() {
+            if (currentCommand.value && currentRuleName.value) {
+                let ruleName = currentRuleName.value;
+                sendMsg({
+                    type: MsgType.SAVE_RULE,
+                    id: genID(),
+                    value: {
+                        rule: {
+                            ...currentCommand.value,
+                            name: currentRuleName.value,
+                        },
+                        oldRuleName: currentCommandName.value,
+                    },
+                }).then(() => {
+                    currentCommandName.value = ruleName;
+                });
+            }
+        }
 
         const changeIncludeExp = debounce(() => {
             sendMsg({
@@ -118,6 +164,7 @@ export default {
                 id: genID(),
                 value: includeFile.value,
             });
+            isLoading.value = true;
         }, 300);
         const changeExcludeExp = debounce(() => {
             sendMsg({
@@ -125,36 +172,67 @@ export default {
                 id: genID(),
                 value: excludeFile.value,
             });
+            isLoading.value = true;
         }, 300);
 
         watch(
-            currentCommand,
-            (currentCommand) => {
+            currentCommandName,
+            (currentCommandName) => {
                 let command = (commands.value || []).find(
-                    (item) => item.name === currentCommand
+                    (item) => item.name === currentCommandName
                 );
+                currentCommand.value = command;
                 currentMatch.value = command?.match;
                 replaceText.value = command?.replace;
+                currentRuleName.value = currentCommandName;
                 // Bus.emit('sendExt', {})
             },
             { immediate: true }
         );
 
-        sendMsg({ type: MsgType.COMMANDS, id: genID() }).then((message) => {
-            console.log(message, 'res');
-            commands.value = message.value || [];
-            currentCommand.value = commands.value?.[0]?.name;
-            currentRuleName.value = currentCommand.value;
+        watch(replaceText, (replaceText) => {
             sendMsg({
-                type: MsgType.MATCH,
+                type: MsgType.CHANGE_REPLACE,
                 id: genID(),
-                value: currentMatch.value,
+                value: replaceText,
             });
         });
 
-        Bus.on('matchResultMsg', (data) => {
+        function commandsCallback(message: ExtCommandsPayload) {
+            let newCommands = message.value || [];
+            if (currentCommandName.value) {
+                currentCommand.value = newCommands.find(
+                    (i) => i.name === currentCommandName.value
+                );
+            }
+            if (!currentCommand.value) {
+                currentCommand.value = commands.value?.[0];
+            }
+            commands.value = newCommands;
+
+            let commandName = currentCommandName.value;
+            currentCommandName.value = undefined;
+            nextTick(() => {
+                currentCommandName.value = commandName;
+                currentRuleName.value = currentCommandName.value;
+            });
+        }
+
+        function matchResultCallback(data: ExtMatchResultPayload) {
             filesNum.value = data?.value?.file || 0;
             matchesNum.value = data?.value?.count || 0;
+            isLoading.value = false;
+        }
+
+        onMounted(() => {
+            Bus.on('commands', commandsCallback);
+            Bus.on('matchResultMsg', matchResultCallback);
+            sendMsg({ type: MsgType.COMMANDS, id: genID() });
+        });
+
+        onUnmounted(() => {
+            Bus.off('matchResultMsg', matchResultCallback);
+            Bus.off('commands', commandsCallback);
         });
 
         return {
@@ -166,11 +244,14 @@ export default {
             currentRuleName,
             triggerMatch,
             triggerReplace,
+            triggerSaveRule,
             changeIncludeExp,
             changeExcludeExp,
             commands,
-            currentCommand,
+            currentCommandName,
             currentMatch,
+            isLoading,
+            isMatching,
         };
     },
 };

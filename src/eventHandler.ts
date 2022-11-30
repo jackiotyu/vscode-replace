@@ -5,8 +5,9 @@ import {
     ExtPayloadType,
     MsgType,
 } from './constants';
-import { getCommands } from './utils/setting';
+import { getCommands, saveRule } from './utils/setting';
 import GlobalReplace from './globalReplace';
+import { StopMatchEvent } from './event';
 
 /**
  * 发送内容给webview，规范payload格式
@@ -48,23 +49,47 @@ export default async function WebviewEventHandler(
 
     if (type === MsgType.MATCH) {
         // TODO 需要匹配字符串
-        GlobalReplace.match(value);
+        await GlobalReplace.match(value);
         postMessage(webviewView, { id, type: MsgType.MATCH, value: 'ok' });
         return;
     }
 
     if (type === MsgType.REPLACE) {
-        GlobalReplace.replace(value);
+        await GlobalReplace.replace(value);
         postMessage(webviewView, { id, type: MsgType.REPLACE, value: 'ok' });
+        return;
     }
 
     if (type === MsgType.INCLUDE) {
-        GlobalReplace.include(value);
+        await GlobalReplace.include(value);
         postMessage(webviewView, { id, type: MsgType.INCLUDE, value: 'ok' });
+        return;
     }
 
     if (type === MsgType.EXCLUDE) {
-        GlobalReplace.exclude(value);
+        await GlobalReplace.exclude(value);
         postMessage(webviewView, { id, type: MsgType.EXCLUDE, value: 'ok' });
+        return;
+    }
+
+    if (type === MsgType.CHANGE_REPLACE) {
+        await GlobalReplace.changeReplace(value);
+        postMessage(webviewView, {
+            id,
+            type: MsgType.CHANGE_REPLACE,
+            value: 'ok',
+        });
+        return;
+    }
+
+    if (type === MsgType.STOP_MATCH) {
+        StopMatchEvent.fire();
+        postMessage(webviewView, { id, type: MsgType.STOP_MATCH, value: 'ok' });
+        return;
+    }
+
+    if (type === MsgType.SAVE_RULE) {
+        await saveRule(value);
+        postMessage(webviewView, { id, type: MsgType.SAVE_RULE, value: 'ok' });
     }
 }

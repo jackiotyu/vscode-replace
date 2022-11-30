@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent } from '../event';
-import { MatchResult, MatchResultItem, rangeItem } from '../constants';
+import { MatchResult, MatchResultItem, RangeItem, Command } from '../constants';
 import { url } from 'inspector';
 
 class FileNode extends vscode.TreeItem {
-    range: rangeItem[] = [];
+    range: RangeItem[] = [];
+    replaceText: string = '';
 }
 
 class TextNode extends vscode.TreeItem {}
@@ -20,11 +21,12 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
     constructor() {
         MatchResultEvent.event((data) => {
-            this.TreeData = data.list;
+            this.TreeData = Array.from(data.map.values());
             this._onDidChangeTreeData.fire(undefined);
         });
     }
 
+    // TODO 中断构建
     // 获取子级
     getChildren(
         element?: FileNode | undefined
@@ -44,10 +46,15 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         }
 
         return element.range.map((item) => {
-            const { text, start, end, group } = item;
+            const { text } = item;
             let treeItem = new vscode.TreeItem(text);
             treeItem.tooltip = text;
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+            treeItem.command = {
+                command: Command.DOC_REPLACE_EVENT,
+                arguments: [element.resourceUri, item],
+                title: '',
+            };
             return treeItem;
         });
     }

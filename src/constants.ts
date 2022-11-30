@@ -6,6 +6,7 @@ export enum Command {
     REPLACE_EVENT = 'jsReplace.replace',
     SELECT_OPTION_EVENT = 'jsReplace.selectOption',
     WEBVIEW_ID = 'jsReplace.webview',
+    DOC_REPLACE_EVENT = 'jsReplace.DocReplace',
 }
 
 export const DefaultSetting = {
@@ -33,9 +34,11 @@ export const DefaultSetting = {
 };
 
 /** 匹配到的内容，记录范围数据 */
-export interface rangeItem {
-    start: number;
-    end: number;
+export interface RangeItem {
+    startLine: number;
+    startCol: number;
+    endLine: number;
+    endCol: number;
     group: string[];
     text: string;
 }
@@ -43,8 +46,10 @@ export interface rangeItem {
 /** 用于构建treeView */
 export interface MatchResultItem {
     uri: vscode.Uri;
-    range: rangeItem[];
+    range: RangeItem[];
 }
+
+export type MatchResultMap = Map<vscode.Uri, MatchResultItem>;
 
 /** 搜索到的结果 */
 export interface MatchResult {
@@ -52,7 +57,7 @@ export interface MatchResult {
     file: number;
     /** 可替换的计数 */
     count: number;
-    list: MatchResultItem[];
+    map: MatchResultMap;
 }
 
 // webview与插件进程的事件type，统一管理
@@ -71,6 +76,12 @@ export enum MsgType {
     EXCLUDE = 'exclude',
     /** 匹配结果 */
     MATCH_RESULT = 'matchResult',
+    /** 修改替换内容 */
+    CHANGE_REPLACE = 'changeReplace',
+    /** 强制停止匹配 */
+    STOP_MATCH = 'stopMatch',
+    /** 保存规则 */
+    SAVE_RULE = 'saveRule',
 }
 
 // webview进程的type
@@ -100,7 +111,7 @@ export type ExtCommandsPayload = GenExtPayload<
 export type ExtDefaultPayload = GenExtPayload<MessageKey, 'ok' | 'error'>;
 export type ExtMatchResultPayload = GenExtPayload<
     MsgType.MATCH_RESULT,
-    MatchResult
+    Exclude<MatchResult, MatchResultMap>
 >;
 
 // webview发送给插件进程的数据格式
@@ -110,6 +121,23 @@ export type WebviewMatchMsg = GenWebviewPayload<MsgType.MATCH, string>;
 export type WebviewReplaceMsg = GenWebviewPayload<MsgType.REPLACE, string>;
 export type WebviewIncludeMsg = GenWebviewPayload<MsgType.INCLUDE, string>;
 export type WebviewExcludeMsg = GenWebviewPayload<MsgType.EXCLUDE, string>;
+export type WebviewChangeReplaceMsg = GenWebviewPayload<
+    MsgType.CHANGE_REPLACE,
+    string
+>;
+export type WebviewStopMatchMsg = GenWebviewPayload<
+    MsgType.STOP_MATCH,
+    undefined
+>;
+export type WebviewSaveRuleMsg = Required<
+    GenWebviewPayload<
+        MsgType.SAVE_RULE,
+        {
+            rule: ReplaceCommand;
+            oldRuleName?: string;
+        }
+    >
+>;
 
 // webview发送给插件进程的数据格式
 export type WebviewPayloadType =
@@ -118,7 +146,10 @@ export type WebviewPayloadType =
     | WebviewMatchMsg
     | WebviewReplaceMsg
     | WebviewIncludeMsg
-    | WebviewExcludeMsg;
+    | WebviewExcludeMsg
+    | WebviewChangeReplaceMsg
+    | WebviewStopMatchMsg
+    | WebviewSaveRuleMsg;
 
 // 插件进程发送给webview的数据格式
 export type ExtPayloadType =
