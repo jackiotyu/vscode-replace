@@ -214,10 +214,10 @@ export default {
                 );
             }
             if (!currentCommand.value) {
-                currentCommand.value = commands.value?.[0];
+                currentCommand.value = newCommands?.[0];
             }
             commands.value = newCommands;
-            let commandName = currentCommandName.value;
+            let commandName = currentCommand.value?.name;
             currentCommandName.value = undefined;
             nextTick(() => {
                 currentCommandName.value = commandName;
