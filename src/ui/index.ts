@@ -8,7 +8,10 @@ import { StatusBar } from './StatusBar';
 
 export class ReplaceExplorer {
     constructor(context: vscode.ExtensionContext) {
-        let webview = new WebViewPanelProvider(context, context.extensionUri);
+        let webviewProvider = new WebViewPanelProvider(
+            context,
+            context.extensionUri
+        );
         // new MatchView(context);
         // new OptionView(context);
         // new ReplaceView(context);
@@ -18,7 +21,13 @@ export class ReplaceExplorer {
         context.subscriptions.push(
             vscode.window.registerWebviewViewProvider(
                 WebViewPanelProvider.viewType,
-                webview
+                webviewProvider,
+                {
+                    webviewOptions: {
+                        // FIXME 暂时直接用该选项恢复webview内容
+                        retainContextWhenHidden: true,
+                    },
+                }
             )
         );
     }

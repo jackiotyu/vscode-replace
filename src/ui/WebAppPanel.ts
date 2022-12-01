@@ -48,7 +48,10 @@ export class WebViewPanelProvider implements vscode.WebviewViewProvider {
                     });
                 }
             });
+
         webviewView.onDidDispose(() => {
+            this.webviewView = undefined;
+            this._disposables.forEach((disposable) => disposable.dispose());
             console.log('😀😀 webviewView onDidDispose');
         });
         this._disposables.push(disposable);
