@@ -22,24 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
         Command.DOC_REPLACE_EVENT,
         async (uri: vscode.Uri, rangeItem: RangeItem) => {
             let document = await vscode.workspace.openTextDocument(uri);
-            let docText = document.getText();
-            // TODO 添加缓存
-            // TODO 监听文档修改事件
-
-            // 直接获取替换的完整文本
-            let replaceText = docText.replace(
-                RegExp(GlobalReplace.getMatchExp(), 'mg'),
-                (text, ...args) => {
-                    return getReplaceText(
-                        GlobalReplace.getReplaceExp(),
-                        text,
-                        ...args
-                    );
-                }
-            );
             let replaceUri = vscode.Uri.from({
                 scheme: EXTENSION_SCHEME,
-                fragment: replaceText,
+                query: JSON.stringify({
+                    match: GlobalReplace.getMatchExp(),
+                    replace: GlobalReplace.getReplaceExp(),
+                }),
                 path: uri.path,
             });
 
