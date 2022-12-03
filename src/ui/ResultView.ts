@@ -1,7 +1,18 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent, SelectOptionEvent } from '../event';
 import { MatchResult, MatchResultItem, RangeItem, Command } from '../constants';
-import { url } from 'inspector';
+
+/** treeItem 的 title */
+class TreeItemLabel implements vscode.TreeItemLabel {
+    /** 文字内容 */
+    label: string;
+    /** 高亮位置，二维数组，记录起始索引和结束索引 */
+    highlights?: [number, number][];
+    constructor(label: string, highlights?: [number, number][]) {
+        this.label = label;
+        this.highlights = highlights;
+    }
+}
 
 class FileNode extends vscode.TreeItem {
     range: RangeItem[] = [];
@@ -59,10 +70,11 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         // 具体匹配位置
         return element.range.map((item) => {
-            const { text } = item;
-            let treeItem = new vscode.TreeItem(text);
-            // TODO 展示当前行的匹配位置
-            treeItem.tooltip = new vscode.MarkdownString('*' + `${text}` + '*');
+            const { text, includeText, startCol } = item;
+            // TODO 当前展示内容
+            let currentText = new TreeItemLabel(includeText, [[startCol, startCol + text.length]]);
+            let treeItem = new vscode.TreeItem(currentText);
+            treeItem.tooltip = new vscode.MarkdownString(includeText);
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
             treeItem.command = {
                 command: Command.DOC_REPLACE_EVENT,

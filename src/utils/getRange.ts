@@ -49,6 +49,8 @@ export function getRange(text: string, reg: string) {
     let res = [];
     let max = text.length;
     let count = 0;
+    let lineCount = 0;
+    let lineSplit = text.split('\n');
 
     while ((matchGroup = regexp.exec(text)) !== null && count <= max) {
         let matchText = matchGroup[0];
@@ -87,7 +89,8 @@ export function getRange(text: string, reg: string) {
         prevMatchEnd = match.end;
         prevMatchEndCol = endCol;
         prevMatchEndLine = endLineNumber;
-
+        console.log(startLineNumber, lineSplit);
+        const includeText = lineSplit.slice(startLineNumber, endLineNumber + 1).join('\n');
         return {
             startLine: startLineNumber,
             startCol,
@@ -95,6 +98,7 @@ export function getRange(text: string, reg: string) {
             endCol,
             group: match.group,
             text: match.text,
+            includeText,
         };
     });
 

@@ -37,12 +37,19 @@ export const DefaultSetting = {
 
 /** 匹配到的内容，记录范围数据 */
 export interface RangeItem {
+    /** 开始行号 */
     startLine: number;
+    /** 开始行索引 */
     startCol: number;
+    /** 结束行索引 */
     endLine: number;
+    /** 结束行号 */
     endCol: number;
     group: string[];
+    /** 匹配内容 */
     text: string;
+    /** 匹配的行内容 */
+    includeText: string;
 }
 
 /** 用于构建treeView */
