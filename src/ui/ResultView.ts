@@ -79,7 +79,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
             if (text.length > textBoxWidth) {
                 offset = startCol;
             } else {
-                offset = end >= textBoxWidth ? end - textBoxWidth + 1 : startCol;
+                end >= textBoxWidth ? offset = end - textBoxWidth : offset = startCol;
             }
             let currentText = new TreeItemLabel(includeText.slice(offset), [[startCol - offset, startCol - offset + text.length]]);
             let treeItem = new vscode.TreeItem(currentText);

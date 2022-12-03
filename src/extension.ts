@@ -4,7 +4,7 @@ import { ReplaceExplorer } from './ui';
 import { Command, RangeItem, EXTENSION_SCHEME } from './constants';
 import { RegisterCodeAction } from './codeAction';
 import { createRangeByRangeItem } from './utils/getRange';
-import { getReplaceText } from './utils/getReplaceText';
+import { validateJSExpression } from './utils/getReplaceText';
 import GlobalReplace from './globalReplace';
 import WorkspaceAdaptor from './lib/workspace';
 import ContentProvider from './contentProvider';
@@ -35,9 +35,10 @@ export function activate(context: vscode.ExtensionContext) {
 
             vscode.commands.executeCommand(
                 'vscode.diff',
-                uri,
                 replaceUri,
-                `${document.fileName} ↔ ${document.fileName} (JS Replace Preview)`
+                uri,
+                `${document.fileName} ↔ ${document.fileName} (JS Replace Preview)`,
+                { selection: currentRange }
             );
         }
     );
@@ -58,4 +59,4 @@ export function activate(context: vscode.ExtensionContext) {
     new ReplaceExplorer(context);
 }
 
-export function deactivate() {}
+export function deactivate() { }

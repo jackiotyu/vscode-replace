@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as vm from 'vm';
 import { getSetting } from './setting';
-import { DefaultSetting } from '../constants';
+import { DefaultSetting, Command } from '../constants';
 import { cancelDecoration, setMatchTextHighlight } from './decoration';
 import localize from '../localize';
 import { ReplaceCommand } from '../common';
@@ -160,4 +160,26 @@ export async function markChange(
         );
     }
     return errorInfo;
+}
+
+export function validateJSExpression(exp?: string): boolean {
+    let expError = null;
+    try {
+        getReplaceText(exp, '', ...Array.from({ length: 99 }, () => ''));
+    } catch (error: any) {
+        expError = error;
+    }
+
+    if (expError) {
+        vscode.window.showWarningMessage(
+            localize(
+                'transform.error.analysisJs',
+                Command.EXTENSION_NAME,
+                '',
+                expError
+            )
+        );
+        return false;
+    }
+    return true;
 }
