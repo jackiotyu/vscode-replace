@@ -71,8 +71,17 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         // 具体匹配位置
         return element.range.map((item) => {
             const { text, includeText, startCol } = item;
-            // TODO 当前展示内容
-            let currentText = new TreeItemLabel(includeText, [[startCol, startCol + text.length]]);
+            // 当前展示内容
+            let end = startCol + text.length;
+            // [0, end]
+            let offset = 0;
+            let textBoxWidth = 15;
+            if (text.length > textBoxWidth) {
+                offset = startCol;
+            } else {
+                offset = end >= textBoxWidth ? end - textBoxWidth + 1 : startCol;
+            }
+            let currentText = new TreeItemLabel(includeText.slice(offset), [[startCol - offset, startCol - offset + text.length]]);
             let treeItem = new vscode.TreeItem(currentText);
             treeItem.tooltip = new vscode.MarkdownString(includeText);
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;

@@ -123,7 +123,7 @@ class GlobalReplace {
             MatchResultEvent.fire(this.matchResult);
         }
 
-        console.log('🚀 this.matchResult >>', this.matchResult);
+        // console.log('🚀 this.matchResult >>', this.matchResult);
     }
     async replace(exp?: string) {
         this.replaceExp = isNullOrUndefined(exp) ? '' : exp;

@@ -89,7 +89,7 @@ export function getRange(text: string, reg: string) {
         prevMatchEnd = match.end;
         prevMatchEndCol = endCol;
         prevMatchEndLine = endLineNumber;
-        console.log(startLineNumber, lineSplit);
+        // console.log(startLineNumber, lineSplit);
         const includeText = lineSplit.slice(startLineNumber, endLineNumber + 1).join('\n');
         return {
             startLine: startLineNumber,
