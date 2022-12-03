@@ -15,13 +15,15 @@ export function* genReplace(
     const reg = new RegExp(matchExp, 'g');
     let result = sourceText;
     let match: ReturnType<typeof reg.exec>;
-    while ((match = reg.exec(result))) {
+    let offset = 0;
+    while ((match = reg.exec(sourceText))) {
         yield result;
         let index = match.index;
         let text = match[0];
-        let prevStr = sourceText.slice(0, index);
-        let nextStr = sourceText.slice(index + text.length);
+        let prevStr = result.slice(0, index + offset);
+        let nextStr = result.slice(index + offset + text.length);
         let content = getReplaceText(replaceExp, text, ...match.slice(1));
+        offset += content.length - text.length;
         result = prevStr + content + nextStr;
     }
     return result;

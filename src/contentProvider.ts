@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getReplaceText } from './utils/getReplaceText';
+import { genReplace } from './utils/replace';
 
 // vscode只读文档的实现
 export default class ContentProvider
@@ -14,26 +14,21 @@ export default class ContentProvider
         uri: vscode.Uri,
         cancelToken: vscode.CancellationToken
     ): Promise<string> {
-        try {
-            let { query, path } = uri;
-            // 获取源文件内容
-            let document = await vscode.workspace.openTextDocument(path);
-            let docText = document.getText();
-            let { match, replace } = JSON.parse(query);
-            // 直接获取替换的完整文本
-            let replaceText = docText.replace(
-                RegExp(match, 'mg'),
-                (text, ...args) => {
-                    if (cancelToken.isCancellationRequested) {
-                        throw new Error('跳出匹配');
-                    }
-                    return getReplaceText(replace, text, ...args);
-                }
-            );
-            return replaceText;
-        } catch (error) {
-            console.error('🚀 跳出匹配 >>', error);
-            return '';
+        let { query, path } = uri;
+        // 获取源文件内容
+        let document = await vscode.workspace.openTextDocument(path);
+        let docText = document.getText();
+        let { match, replace } = JSON.parse(query);
+        // 直接获取替换的完整文本
+        let gen = genReplace(docText, match, replace);
+        let current = gen.next();
+        let value = current.value;
+        let done = current.done;
+        while (!done && !cancelToken.isCancellationRequested) {
+            current = gen.next();
+            value = current.value;
+            done = current.done;
         }
+        return value;
     }
 }
