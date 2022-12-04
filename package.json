@@ -59,25 +59,25 @@
 			"view/item/context": [
 				{
 					"when": "viewItem == replaceTreeItem",
-					"group": "inline",
+					"group": "inline@2",
 					"submenu": "cancelItem",
 					"command": "jsReplace.CancelReplaceItem"
 				},
 				{
 					"when": "viewItem == replaceTreeItem",
-					"group": "inline",
+					"group": "inline@1",
 					"submenu": "replaceItem",
 					"command": "jsReplace.ReplaceItem"
 				},
 				{
 					"when": "viewItem == replaceTreeFile",
-					"group": "inline",
+					"group": "inline@2",
 					"submenu": "cancelItem",
 					"command": "jsReplace.CancelReplaceFile"
 				},
 				{
 					"when": "viewItem == replaceTreeFile",
-					"group": "inline",
+					"group": "inline@1",
 					"submenu": "replaceItem",
 					"command": "jsReplace.ReplaceFile"
 				}

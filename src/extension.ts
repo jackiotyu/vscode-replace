@@ -45,6 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     let commandReplaceItem = vscode.commands.registerCommand(
         'jsReplace.ReplaceItem',
         (item) => {
+            // TODO 替换当前位置
             console.log('🚀 args >>', item);
         }
     );
