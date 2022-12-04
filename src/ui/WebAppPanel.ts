@@ -7,7 +7,7 @@ import { getCommands } from '../utils/setting';
 
 export class WebViewPanelProvider implements vscode.WebviewViewProvider {
     private webviewView?: vscode.WebviewView;
-    public static readonly viewType = 'panel:webview';
+    public static readonly viewType = 'panel.webview';
     private _disposables: vscode.Disposable[] = [];
 
     constructor(

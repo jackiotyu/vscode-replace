@@ -4,21 +4,21 @@ import { ReplaceExplorer } from './ui';
 import { Command, RangeItem, EXTENSION_SCHEME } from './constants';
 import { RegisterCodeAction } from './codeAction';
 import { createRangeByRangeItem } from './utils/getRange';
-import { validateJSExpression } from './utils/getReplaceText';
 import GlobalReplace from './globalReplace';
 import WorkspaceAdaptor from './lib/workspace';
 import ContentProvider from './contentProvider';
+import { FileNode, TextNode } from './ui/TreeNode';
 
 export function activate(context: vscode.ExtensionContext) {
     // 主要命令
     // TODO 整合到bootStrapper
-    let textTransform = vscode.commands.registerTextEditorCommand(
+    let commandTextTransform = vscode.commands.registerTextEditorCommand(
         Command.REPLACE_EVENT,
         (editor) => {
             transform(editor);
         }
     );
-    let docReplace = vscode.commands.registerCommand(
+    let commandDocReplace = vscode.commands.registerCommand(
         Command.DOC_REPLACE_EVENT,
         async (uri: vscode.Uri, rangeItem: RangeItem) => {
             let document = await vscode.workspace.openTextDocument(uri);
@@ -28,35 +28,67 @@ export function activate(context: vscode.ExtensionContext) {
                     match: GlobalReplace.getMatchExp(),
                     replace: GlobalReplace.getReplaceExp(),
                 }),
-                path: uri.path,
+                path: uri.fsPath,
             });
 
             const currentRange = createRangeByRangeItem(rangeItem);
 
             vscode.commands.executeCommand(
                 'vscode.diff',
-                replaceUri,
                 uri,
-                `${document.fileName} ↔ ${document.fileName} (JS Replace Preview)`,
-                { selection: currentRange }
+                replaceUri,
+                `${document.fileName} ↔ ${document.fileName} (JS Replace Preview)`
             );
+        }
+    );
+
+    let commandReplaceItem = vscode.commands.registerCommand(
+        'jsReplace.ReplaceItem',
+        (item) => {
+            console.log('🚀 args >>', item);
+        }
+    );
+    let commandCancelReplaceItem = vscode.commands.registerCommand(
+        'jsReplace.CancelReplaceItem',
+        (item: TextNode) => {
+            if (!item?.uri) return;
+            GlobalReplace.excludeRange(item.uri, item.index);
+        }
+    );
+    let commandReplaceFolder = vscode.commands.registerCommand(
+        'jsReplace.ReplaceFile',
+        (item) => {
+            if (!item?.resourceUri) return;
+            GlobalReplace.replaceFile(item.resourceUri);
+        }
+    );
+    let commandCancelReplaceFolder = vscode.commands.registerCommand(
+        'jsReplace.CancelReplaceFile',
+        (item?: FileNode) => {
+            if (!item?.resourceUri) return;
+            GlobalReplace.excludeFile(item.resourceUri);
         }
     );
 
     let workspaceAdaptor = new WorkspaceAdaptor(vscode.workspace);
     let contentProvider = new ContentProvider();
-    let disposable = workspaceAdaptor.registerTextDocumentContentProvider(
-        EXTENSION_SCHEME,
-        contentProvider
-    );
+    let registerTextDocument =
+        workspaceAdaptor.registerTextDocumentContentProvider(
+            EXTENSION_SCHEME,
+            contentProvider
+        );
 
-    context.subscriptions.push(disposable);
-    context.subscriptions.push(textTransform);
-    context.subscriptions.push(docReplace);
+    context.subscriptions.push(registerTextDocument);
+    context.subscriptions.push(commandTextTransform);
+    context.subscriptions.push(commandDocReplace);
+    context.subscriptions.push(commandCancelReplaceItem);
+    context.subscriptions.push(commandReplaceItem);
+    context.subscriptions.push(commandReplaceFolder);
+    context.subscriptions.push(commandCancelReplaceFolder);
     // 注册code action
     new RegisterCodeAction(context);
     // UI
     new ReplaceExplorer(context);
 }
 
-export function deactivate() { }
+export function deactivate() {}

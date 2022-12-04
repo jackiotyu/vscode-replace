@@ -9,7 +9,7 @@ import { getRange } from './utils/getRange';
 import { getReplaceText } from './utils/getReplaceText';
 import { readFile } from 'fs/promises';
 import localize from './localize';
-import { Command } from './constants';
+import { Command, MatchResultMap } from './constants';
 
 function canWrite() {
     return vscode.workspace.fs.isWritableFileSystem('file');
@@ -31,6 +31,15 @@ class GlobalReplace {
     /** 提供给外部读取 */
     getMatchExp() {
         return this.matchExp;
+    }
+
+    /**
+     * 根据文件路径获取匹配文件信息
+     * @param path
+     * @returns
+     */
+    getMatchItem(path: string) {
+        return this.matchResult.map.get(path);
     }
 
     // TODO 中断搜索
@@ -66,19 +75,19 @@ class GlobalReplace {
                         let stat = await vscode.workspace.fs.stat(item);
                         if (
                             stat.permissions !==
-                            vscode.FilePermission.Readonly &&
+                                vscode.FilePermission.Readonly &&
                             !isBinaryPath(item.fsPath) &&
                             !isBinaryFileSync(item.fsPath)
                         ) {
                             // TODO 保持顺序
                             fileUriList.push(item);
                         }
-                    } catch (error) { }
+                    } catch (error) {}
                 })
             );
 
             let matchResultList: MatchResultItem[] = [];
-            let matchResultMap: Map<vscode.Uri, MatchResultItem> = new Map();
+            let matchResultMap: MatchResultMap = new Map();
 
             // 匹配文件
             await Promise.all(
@@ -90,12 +99,12 @@ class GlobalReplace {
                         const file = await readFile(item.fsPath, 'utf8');
                         const range = getRange(file, this.matchExp);
                         if (range.length) {
-                            matchResultMap.set(item, {
+                            matchResultMap.set(item.fsPath, {
                                 uri: item,
                                 range,
                             });
                         }
-                    } catch (error) { }
+                    } catch (error) {}
                 })
             );
 
@@ -136,36 +145,8 @@ class GlobalReplace {
 
         // 执行替换
         const list = [...this.matchResult.map.values()].reverse();
-        list.forEach(async (item, index) => {
-            const workspaceEdit = new vscode.WorkspaceEdit();
-            [...item.range].reverse().forEach((rangeItem) => {
-                const range = createRangeByRangeItem(rangeItem);
-                const newText = getReplaceText(
-                    this.replaceExp,
-                    rangeItem.text,
-                    ...rangeItem.group
-                );
-                workspaceEdit.replace(item.uri, range, newText);
-            });
-            this.matchResult.map.delete(item.uri);
-            this.matchResult.count -= item.range.length;
-            this.matchResult.file = this.matchResult.map.size;
-            // 更新 tree view
-            MatchResultEvent.fire(this.matchResult);
-            // // 直接替换整个文本内容
-            // const doc = await vscode.workspace.openTextDocument(item.uri);
-            // const workspaceEdit = new vscode.WorkspaceEdit();
-            // const lineNumber = Math.max(doc.lineCount - 1, 0);
-            // const lastLine = doc.lineAt(lineNumber);
-            // const range = new vscode.Range(
-            //     new vscode.Position(0, 0),
-            //     new vscode.Position(
-            //         lineNumber,
-            //         lastLine.rangeIncludingLineBreak.end.character
-            //     )
-            // );
-            // workspaceEdit.replace(item.uri, range, item.replaceText);
-            vscode.workspace.applyEdit(workspaceEdit);
+        list.forEach(async (item) => {
+            this.replaceFile(item.uri);
         });
     }
     async exclude(exp?: vscode.GlobPattern) {
@@ -176,42 +157,60 @@ class GlobalReplace {
         this.includeExp = isNullOrUndefined(exp) ? '' : exp;
         await this.reloadMatch();
     }
+    // 删除range
+    excludeRange(uri: vscode.Uri, index: number) {
+        if (!uri || Number.isNaN(+index)) return;
+        let item = this.matchResult.map.get(uri.fsPath);
+        if (!item) return;
+        item.range.splice(index, 1);
+        if (item.range.length === 0) {
+            this.matchResult.map.delete(uri.fsPath);
+        }
+        this.matchResult.count -= 1;
+        this.matchResult.file = this.matchResult.map.size;
+        // 更新 tree view
+        MatchResultEvent.fire(this.matchResult);
+    }
+    // 删除文件
+    excludeFile(uri?: vscode.Uri) {
+        if (!uri) return;
+        let item = this.matchResult.map.get(uri.fsPath);
+        if (!item) return;
+        this.deleteMatchFile(uri);
+    }
+    replaceFile(uri?: vscode.Uri) {
+        if (!uri) return;
+        let item = this.matchResult.map.get(uri.fsPath);
+        if (!item) return;
+        const workspaceEdit = new vscode.WorkspaceEdit();
+        [...item.range].reverse().forEach((rangeItem) => {
+            const range = createRangeByRangeItem(rangeItem);
+            const newText = getReplaceText(
+                this.replaceExp,
+                rangeItem.text,
+                ...rangeItem.group
+            );
+            workspaceEdit.replace(uri, range, newText);
+        });
+        vscode.workspace.applyEdit(workspaceEdit);
+        this.deleteMatchFile(uri);
+    }
+    deleteMatchFile(uri?: vscode.Uri) {
+        if (!uri || !this.matchResult.map.get(uri.fsPath)) return;
+        let item = this.matchResult.map.get(uri.fsPath) as MatchResultItem;
+        this.matchResult.map.delete(uri.fsPath);
+        this.matchResult.count -= item.range.length;
+        this.matchResult.file = this.matchResult.map.size;
+        // 更新 tree view
+        MatchResultEvent.fire(this.matchResult);
+    }
+    updateMatchInfo() {}
     changeReplace(exp?: string) {
         this.replaceExp =
             isNullOrUndefined(exp) || !this.validateJSExpression(exp)
                 ? ''
                 : exp;
     }
-    // /**
-    //  * TODO 修改匹配内容后，更新实时预览效果
-    //  * @param exp
-    //  * @param update 更新 tree view 数据
-    //  */
-    // async changeReplace(exp?: string, update: boolean = false) {
-    //     this.replaceExp = isNullOrUndefined(exp) ? '' : exp;
-    //     // 判断是合法的js表达式
-    //     if (!this.validateJSExpression(exp)) {
-    //         return;
-    //     }
-
-    //     // TODO 需要优化
-    //     await this.matchResult?.list.map(async (item) => {
-    //         let doc = await vscode.workspace.openTextDocument(item.uri);
-    //         let docText = doc.getText();
-    //         docText = docText;
-    //         // 直接获取替换的完整文本
-    //         item.replaceText = docText.replace(
-    //             RegExp(this.matchExp, 'mg'),
-    //             (text, ...args) => {
-    //                 return getReplaceText(this.replaceExp, text, ...args);
-    //             }
-    //         );
-    //     });
-
-    //     if (update && this.matchResult) {
-    //         MatchResultEvent.fire(this.matchResult);
-    //     }
-    // }
     validateJSExpression(exp?: string): boolean {
         let expError = null;
         try {

@@ -50,6 +50,8 @@ export interface RangeItem {
     text: string;
     /** 匹配的行内容 */
     includeText: string;
+    /** 文本中的起始点 */
+    start: number;
 }
 
 /** 用于构建treeView */
@@ -58,7 +60,7 @@ export interface MatchResultItem {
     range: RangeItem[];
 }
 
-export type MatchResultMap = Map<vscode.Uri, MatchResultItem>;
+export type MatchResultMap = Map<string, MatchResultItem>;
 
 /** 搜索到的结果 */
 export interface MatchResult {

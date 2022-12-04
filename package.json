@@ -44,21 +44,97 @@
 		"views": {
 			"ReplaceExplorer": [
 				{
-					"id": "panel:webview",
+					"id": "panel.webview",
 					"name": "%ext.views.ReplaceExplorer.webview.title%",
 					"type": "webview"
 				},
 				{
-					"id": "panel:result",
+					"id": "panel.result",
 					"name": "%ext.views.ReplaceExplorer.result.title%",
 					"type": "tree"
 				}
 			]
 		},
+		"menus": {
+			"view/item/context": [
+				{
+					"when": "viewItem == replaceTreeItem",
+					"group": "inline",
+					"submenu": "cancelItem",
+					"command": "jsReplace.CancelReplaceItem"
+				},
+				{
+					"when": "viewItem == replaceTreeItem",
+					"group": "inline",
+					"submenu": "replaceItem",
+					"command": "jsReplace.ReplaceItem"
+				},
+				{
+					"when": "viewItem == replaceTreeFile",
+					"group": "inline",
+					"submenu": "cancelItem",
+					"command": "jsReplace.CancelReplaceFile"
+				},
+				{
+					"when": "viewItem == replaceTreeFile",
+					"group": "inline",
+					"submenu": "replaceItem",
+					"command": "jsReplace.ReplaceFile"
+				}
+			]
+		},
+		"submenus": [
+			{
+				"icon": "$(search-replace)",
+				"id": "replaceItem",
+				"label": "replaceItem"
+			},
+			{
+				"icon": "$(close)",
+				"id": "cancelItem",
+				"label": "cancelItem"
+			}
+		],
 		"commands": [
 			{
 				"command": "jsReplace.replace",
 				"title": "JSReplace"
+			},
+			{
+				"command": "jsReplace.replace",
+				"title": "JSReplace"
+			},
+			{
+				"command": "jsReplace.replace",
+				"title": "JSReplace"
+			},
+			{
+				"command": "jsReplace.ReplaceItem",
+				"title": "ReplaceItem",
+				"icon": "$(find-replace)",
+				"shortTitle": "replace",
+				"enablement": "viewItem == replaceTreeItem"
+			},
+			{
+				"command": "jsReplace.CancelReplaceItem",
+				"title": "CancelReplaceItem",
+				"icon": "$(close)",
+				"shortTitle": "close",
+				"enablement": "viewItem == replaceTreeItem"
+			},
+			{
+				"command": "jsReplace.ReplaceFile",
+				"title": "ReplaceFile",
+				"icon": "$(find-replace)",
+				"shortTitle": "replace",
+				"enablement": "viewItem == replaceTreeFile"
+			},
+			{
+				"command": "jsReplace.CancelReplaceFile",
+				"title": "CancelReplaceFile",
+				"icon": "$(close)",
+				"shortTitle": "close",
+				"enablement": "viewItem == replaceTreeFile"
 			}
 		],
 		"configuration": {

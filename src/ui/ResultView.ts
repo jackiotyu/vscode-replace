@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent, SelectOptionEvent } from '../event';
-import { MatchResult, MatchResultItem, RangeItem, Command } from '../constants';
+import { MatchResult, MatchResultItem, Command } from '../constants';
+import { TreeNode, FileNode, TextNode } from './TreeNode';
 
 /** treeItem 的 title */
 class TreeItemLabel implements vscode.TreeItemLabel {
@@ -14,14 +15,9 @@ class TreeItemLabel implements vscode.TreeItemLabel {
     }
 }
 
-class FileNode extends vscode.TreeItem {
-    range: RangeItem[] = [];
-    replaceText: string = '';
+function isFileNodeChild(e: any): e is FileNode {
+    return e === undefined;
 }
-
-class TextNode extends vscode.TreeItem { }
-
-type TreeNode = FileNode | TextNode;
 
 class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     private _onDidChangeTreeData: vscode.EventEmitter<any> =
@@ -46,10 +42,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     // 获取子级
     getChildren(
         element?: FileNode | undefined
-    ): vscode.ProviderResult<vscode.TreeItem[]> {
-        if (this.forceStop) {
-            return;
-        }
+    ): vscode.ProviderResult<TreeNode[]> {
         // 文件
         if (element === undefined) {
             return this.TreeData.map((item) => {
@@ -63,13 +56,14 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
                 );
                 treeItem.tooltip = uri.path;
                 treeItem.range = range;
+                treeItem.contextValue = 'replaceTreeFile';
                 treeItem.iconPath = vscode.ThemeIcon.File;
                 return treeItem;
             });
         }
 
         // 具体匹配位置
-        return element.range.map((item) => {
+        return element?.range.map((item, index) => {
             const { text, includeText, startCol } = item;
             // 当前展示内容
             let end = startCol + text.length;
@@ -79,12 +73,19 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
             if (text.length > textBoxWidth) {
                 offset = startCol;
             } else {
-                end >= textBoxWidth ? offset = end - textBoxWidth : offset = startCol;
+                end >= textBoxWidth
+                    ? (offset = end - textBoxWidth)
+                    : (offset = startCol);
             }
-            let currentText = new TreeItemLabel(includeText.slice(offset), [[startCol - offset, startCol - offset + text.length]]);
-            let treeItem = new vscode.TreeItem(currentText);
+            let currentText = new TreeItemLabel(includeText.slice(offset), [
+                [startCol - offset, startCol - offset + text.length],
+            ]);
+            let treeItem = new TextNode(currentText);
             treeItem.tooltip = new vscode.MarkdownString(includeText);
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+            treeItem.contextValue = 'replaceTreeItem';
+            treeItem.index = index;
+            treeItem.uri = element.resourceUri;
             treeItem.command = {
                 command: Command.DOC_REPLACE_EVENT,
                 arguments: [element.resourceUri, item],
@@ -96,9 +97,6 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
     // 构造tree节点
     getTreeItem(element: TreeNode): Thenable<TreeNode> {
-        if (this.forceStop) {
-            return Promise.reject();
-        }
         return Promise.resolve(element);
     }
 }
@@ -107,7 +105,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
 export class View {
     protected treeView?: vscode.TreeView<vscode.TreeItem>;
     constructor(context: vscode.ExtensionContext) {
-        this.treeView = vscode.window.createTreeView('panel:result', {
+        this.treeView = vscode.window.createTreeView('panel.result', {
             treeDataProvider: new TreeProvider(),
         });
         context.subscriptions.push(this.treeView);
