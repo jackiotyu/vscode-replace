@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent, SelectOptionEvent } from '../event';
 import {
-    MatchResult,
+    MatchResultMap,
     MatchResultItem,
     Command,
     SEARCH_MATCH_COUNT_STR,
 } from '../constants';
 import { TreeNode, FileNode, TextNode } from './TreeNode';
+import localize from '../localize';
 
 /** treeItem 的 title */
 class TreeItemLabel implements vscode.TreeItemLabel {
@@ -29,7 +30,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> =
         this._onDidChangeTreeData.event;
-    private TreeData: MatchResultItem[] = [];
+    private TreeData: MatchResultMap = new Map();
     protected forceStop: boolean = false;
 
     constructor() {
@@ -38,7 +39,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         });
         MatchResultEvent.event((data) => {
             this.forceStop = false;
-            this.TreeData = Array.from(data.map.values());
+            this.TreeData = data.map;
             this._onDidChangeTreeData.fire(undefined);
         });
     }
@@ -50,19 +51,19 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     ): vscode.ProviderResult<TreeNode[]> {
         // 文件
         if (element === undefined) {
-            return this.TreeData.map((item) => {
+            return Array.from(this.TreeData.values()).map((item) => {
                 const { uri, range } = item;
-                const uriWithCount = uri.with({
-                    query: `${SEARCH_MATCH_COUNT_STR}${range.length}`,
-                });
                 let treeItem = new FileNode(
-                    uriWithCount,
+                    uri,
                     range.length <= 20
                         ? vscode.TreeItemCollapsibleState.Expanded
                         : vscode.TreeItemCollapsibleState.Collapsed
                 );
-                treeItem.tooltip = uri.path;
-                treeItem.range = range;
+                treeItem.label = `${uri.fsPath} (${range.length})`;
+                treeItem.tooltip = `${uri.fsPath} (${localize(
+                    'fileDecoration.matchCount',
+                    String(range.length)
+                )})`;
                 treeItem.contextValue = 'replaceTreeFile';
                 treeItem.iconPath = vscode.ThemeIcon.File;
                 return treeItem;
@@ -70,36 +71,32 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         }
 
         // 具体匹配位置
-        return element?.range.map((item, index) => {
-            const { text, includeText, startCol } = item;
-            // 当前展示内容
-            let end = startCol + text.length;
-            // [0, end]
-            let offset = 0;
-            let textBoxWidth = 15;
-            if (text.length > textBoxWidth) {
-                offset = startCol;
-            } else {
-                end >= textBoxWidth
-                    ? (offset = end - textBoxWidth)
-                    : (offset = startCol);
+        return this.TreeData.get(element.resourceUri?.fsPath || '')?.range.map(
+            (item, index) => {
+                const { text, includeText, previewOffset, startCol } = item;
+                let currentText = new TreeItemLabel(
+                    includeText.slice(previewOffset),
+                    [
+                        [
+                            startCol - previewOffset,
+                            startCol - previewOffset + text.length,
+                        ],
+                    ]
+                );
+                let treeItem = new TextNode(currentText);
+                treeItem.tooltip = new vscode.MarkdownString(includeText);
+                treeItem.collapsibleState =
+                    vscode.TreeItemCollapsibleState.None;
+                treeItem.contextValue = 'replaceTreeItem';
+                treeItem.index = index;
+                treeItem.command = {
+                    command: Command.DOC_REPLACE_EVENT,
+                    arguments: [element.resourceUri?.fsPath, item],
+                    title: '',
+                };
+                return treeItem;
             }
-            let currentText = new TreeItemLabel(includeText.slice(offset), [
-                [startCol - offset, startCol - offset + text.length],
-            ]);
-            let treeItem = new TextNode(currentText);
-            treeItem.tooltip = new vscode.MarkdownString(includeText);
-            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
-            treeItem.contextValue = 'replaceTreeItem';
-            treeItem.index = index;
-            treeItem.uri = element.resourceUri;
-            treeItem.command = {
-                command: Command.DOC_REPLACE_EVENT,
-                arguments: [element.resourceUri, item],
-                title: '',
-            };
-            return treeItem;
-        });
+        );
     }
 
     // 构造tree节点

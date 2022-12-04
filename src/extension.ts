@@ -8,7 +8,6 @@ import GlobalReplace from './globalReplace';
 import WorkspaceAdaptor from './lib/workspace';
 import ContentProvider from './contentProvider';
 import { FileNode, TextNode } from './ui/TreeNode';
-import CountDecorationProvider from './fileDecorationProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     // 主要命令
@@ -21,15 +20,16 @@ export function activate(context: vscode.ExtensionContext) {
     );
     let commandDocReplace = vscode.commands.registerCommand(
         Command.DOC_REPLACE_EVENT,
-        async (uri: vscode.Uri, rangeItem: RangeItem) => {
-            let document = await vscode.workspace.openTextDocument(uri);
+        async (fsPath: string, rangeItem: RangeItem) => {
+            let document = await vscode.workspace.openTextDocument(fsPath);
+            let uri = GlobalReplace.getMatchItem(fsPath)?.uri;
             let replaceUri = vscode.Uri.from({
                 scheme: EXTENSION_SCHEME,
                 query: JSON.stringify({
                     match: GlobalReplace.getMatchExp(),
                     replace: GlobalReplace.getReplaceExp(),
                 }),
-                path: uri.fsPath,
+                path: fsPath,
             });
 
             const currentRange = createRangeByRangeItem(rangeItem);
@@ -53,8 +53,9 @@ export function activate(context: vscode.ExtensionContext) {
     let commandCancelReplaceItem = vscode.commands.registerCommand(
         'jsReplace.CancelReplaceItem',
         (item: TextNode) => {
-            if (!item?.uri) return;
-            GlobalReplace.excludeRange(item.uri, item.index);
+            let fsPath = item?.command?.arguments?.[0];
+            if (!fsPath) return;
+            GlobalReplace.excludeRange(fsPath, item.index);
         }
     );
     let commandReplaceFolder = vscode.commands.registerCommand(
@@ -80,10 +81,6 @@ export function activate(context: vscode.ExtensionContext) {
             contentProvider
         );
 
-    let registerFileDecoration = vscode.window.registerFileDecorationProvider(
-        new CountDecorationProvider()
-    );
-
     context.subscriptions.push(registerTextDocument);
     context.subscriptions.push(commandTextTransform);
     context.subscriptions.push(commandDocReplace);
@@ -91,7 +88,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(commandReplaceItem);
     context.subscriptions.push(commandReplaceFolder);
     context.subscriptions.push(commandCancelReplaceFolder);
-    context.subscriptions.push(registerFileDecoration);
     // 注册code action
     new RegisterCodeAction(context);
     // UI

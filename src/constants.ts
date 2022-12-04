@@ -54,6 +54,8 @@ export interface RangeItem {
     includeText: string;
     /** 文本中的起始点 */
     start: number;
+    /** 预览用的行起点偏移 */
+    previewOffset: number;
 }
 
 /** 用于构建treeView */

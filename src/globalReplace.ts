@@ -158,13 +158,13 @@ class GlobalReplace {
         await this.reloadMatch();
     }
     // 删除range
-    excludeRange(uri: vscode.Uri, index: number) {
-        if (!uri || Number.isNaN(+index)) return;
-        let item = this.matchResult.map.get(uri.fsPath);
+    excludeRange(fsPath: string, index: number) {
+        if (!fsPath || Number.isNaN(+index)) return;
+        let item = this.matchResult.map.get(fsPath);
         if (!item) return;
         item.range.splice(index, 1);
         if (item.range.length === 0) {
-            this.matchResult.map.delete(uri.fsPath);
+            this.matchResult.map.delete(fsPath);
         }
         this.matchResult.count -= 1;
         this.matchResult.file = this.matchResult.map.size;

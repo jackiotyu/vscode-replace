@@ -7,7 +7,7 @@ export class FileNode extends vscode.TreeItem {
 }
 export class TextNode extends vscode.TreeItem {
     index: number = 0;
-    uri?: vscode.Uri;
+    fsPath?: string;
 }
 
 export type TreeNode = FileNode | TextNode;
