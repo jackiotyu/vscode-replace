@@ -4,7 +4,7 @@ import {
     MatchResultMap,
     MatchResultItem,
     Command,
-    SEARCH_MATCH_COUNT_STR,
+    SEARCH_MATCH_FILE_BADGE,
 } from '../constants';
 import { TreeNode, FileNode, TextNode } from './TreeNode';
 import localize from '../localize';
@@ -53,8 +53,12 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         if (element === undefined) {
             return Array.from(this.TreeData.values()).map((item) => {
                 const { uri, range } = item;
+
+                const uriWithBadge = uri.with({
+                    query: SEARCH_MATCH_FILE_BADGE,
+                });
                 let treeItem = new FileNode(
-                    uri,
+                    uriWithBadge,
                     range.length <= 20
                         ? vscode.TreeItemCollapsibleState.Expanded
                         : vscode.TreeItemCollapsibleState.Collapsed

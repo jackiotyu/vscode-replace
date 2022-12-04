@@ -222,9 +222,8 @@ class GlobalReplace {
         if (expError) {
             vscode.window.showWarningMessage(
                 localize(
-                    'transform.error.analysisJs',
+                    'transform.error.analysisJs.replace',
                     Command.EXTENSION_NAME,
-                    '',
                     expError
                 )
             );

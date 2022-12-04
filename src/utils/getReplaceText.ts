@@ -20,7 +20,13 @@ export function getReplaceText(
     ...args: string[]
 ) {
     if (replace === '' || replace === undefined) {
-        throw new Error(localize('transform.action.replace.confirm'));
+        throw new Error(
+            localize(
+                'transform.error.analysisJs.replace',
+                Command.EXTENSION_NAME,
+                new SyntaxError('replace is unknown').message
+            )
+        );
     }
 
     const { prefix, match } = getSetting();
@@ -173,9 +179,8 @@ export function validateJSExpression(exp?: string): boolean {
     if (expError) {
         vscode.window.showWarningMessage(
             localize(
-                'transform.error.analysisJs',
+                'transform.error.analysisJs.replace',
                 Command.EXTENSION_NAME,
-                '',
                 expError
             )
         );

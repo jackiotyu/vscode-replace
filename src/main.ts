@@ -109,7 +109,7 @@ async function transform(activeEditor: vscode.TextEditor) {
             // console.error(error);
             vscode.window.showWarningMessage(
                 localize(
-                    'transform.error.analysisJs',
+                    'transform.error.analysisJs.command',
                     Command.EXTENSION_NAME,
                     command.name,
                     error

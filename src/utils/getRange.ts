@@ -47,9 +47,10 @@ export function getRange(text: string, reg: string) {
     let regexp = RegExp(reg, 'mg');
     let matchGroup;
     let res = [];
-    let max = text.length;
+    // 限制最大两万个匹配
+    const MAX_COUNT = 20000;
+    let max = text.length > MAX_COUNT ? MAX_COUNT : text.length;
     let count = 0;
-    let lineCount = 0;
     let lineSplit = text.split('\n');
 
     while ((matchGroup = regexp.exec(text)) !== null && count <= max) {

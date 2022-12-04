@@ -7,9 +7,11 @@ import { createRangeByRangeItem } from './utils/getRange';
 import GlobalReplace from './globalReplace';
 import WorkspaceAdaptor from './lib/workspace';
 import ContentProvider from './contentProvider';
+import CountDecorationProvider from './fileDecorationProvider';
 import { FileNode, TextNode } from './ui/TreeNode';
 
 export function activate(context: vscode.ExtensionContext) {
+    let contentProvider = new ContentProvider();
     // 主要命令
     // TODO 整合到bootStrapper
     let commandTextTransform = vscode.commands.registerTextEditorCommand(
@@ -22,15 +24,23 @@ export function activate(context: vscode.ExtensionContext) {
         Command.DOC_REPLACE_EVENT,
         async (fsPath: string, rangeItem: RangeItem) => {
             let document = await vscode.workspace.openTextDocument(fsPath);
-            let uri = GlobalReplace.getMatchItem(fsPath)?.uri;
+            let { uri, range } = GlobalReplace.getMatchItem(fsPath) || {};
             let replaceUri = vscode.Uri.from({
                 scheme: EXTENSION_SCHEME,
                 query: JSON.stringify({
                     match: GlobalReplace.getMatchExp(),
                     replace: GlobalReplace.getReplaceExp(),
+                    range: range?.map((i) => i.start).toString(),
                 }),
                 path: fsPath,
             });
+
+            // vscode.workspace.onDidChangeTextDocument((e) => {
+            //     if (e.document.uri.fsPath === fsPath) {
+            //         console.log('🚀 文件更改 >>', fsPath);
+            //         contentProvider.onDidChangeEmitter.fire(replaceUri);
+            //     }
+            // });
 
             const currentRange = createRangeByRangeItem(rangeItem);
 
@@ -74,14 +84,17 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     let workspaceAdaptor = new WorkspaceAdaptor(vscode.workspace);
-    let contentProvider = new ContentProvider();
     let registerTextDocument =
         workspaceAdaptor.registerTextDocumentContentProvider(
             EXTENSION_SCHEME,
             contentProvider
         );
+    let registerFileDecorator = vscode.window.registerFileDecorationProvider(
+        new CountDecorationProvider()
+    );
 
     context.subscriptions.push(registerTextDocument);
+    context.subscriptions.push(registerFileDecorator);
     context.subscriptions.push(commandTextTransform);
     context.subscriptions.push(commandDocReplace);
     context.subscriptions.push(commandCancelReplaceItem);

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { SEARCH_MATCH_COUNT_STR } from './constants';
+import { SEARCH_MATCH_FILE_BADGE } from './constants';
 import localize from './localize';
 
 /** treeView 中文件匹配的数量装饰 */
@@ -13,11 +13,10 @@ export default class CountDecorationProvider
         uri: vscode.Uri,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.FileDecoration> {
-        if (RegExp(SEARCH_MATCH_COUNT_STR).test(uri.query)) {
-            let count = uri.query.match(/count=(\d+)/)?.[1] || '0';
+        if (uri.query === SEARCH_MATCH_FILE_BADGE) {
             return {
-                badge: count,
-                tooltip: localize('fileDecoration.matchCount', count),
+                badge: '',
+                tooltip: '',
             };
         }
     }

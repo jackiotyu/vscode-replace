@@ -18,9 +18,14 @@ export function* genReplace(
     let result = sourceText;
     let match: ReturnType<typeof reg.exec>;
     let offset = 0;
-    while ((match = reg.exec(sourceText))) {
+    // 限制最大两万个匹配
+    const MAX_COUNT = 20000;
+    let max = sourceText.length > MAX_COUNT ? MAX_COUNT : sourceText.length;
+    let count = 0;
+    while ((match = reg.exec(sourceText)) !== null && count <= max) {
         yield result;
         let index = match.index;
+        count++;
         if (!includesIndexList.includes(index)) continue;
         let text = match[0];
         let prevStr = result.slice(0, index + offset);

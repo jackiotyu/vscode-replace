@@ -6,8 +6,8 @@ import GlobalReplace from './globalReplace';
 export default class ContentProvider
     implements vscode.TextDocumentContentProvider
 {
-    changeEmitter = new vscode.EventEmitter<vscode.Uri>();
-    onDidChange = this.changeEmitter.event;
+    onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+    onDidChange = this.onDidChangeEmitter.event;
     // 提供只读文档内容
     // TODO 添加缓存
     // TODO 监听文档修改事件

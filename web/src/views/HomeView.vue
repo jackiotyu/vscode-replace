@@ -214,18 +214,19 @@ export default {
             { immediate: true }
         );
 
-        watch(replaceText, (replaceText) => {
-            if (replaceText === '') {
-                return;
-            }
+        watch(
+            replaceText,
             debounce((replaceText: string | undefined) => {
+                if (replaceText === '') {
+                    return;
+                }
                 sendMsg({
                     type: MsgType.CHANGE_REPLACE,
                     id: genID(),
                     value: replaceText,
                 });
-            }, 300);
-        });
+            }, 300)
+        );
 
         function commandsCallback(message: ExtCommandsPayload) {
             let newCommands = message.value || [];
