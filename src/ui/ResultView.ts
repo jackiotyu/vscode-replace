@@ -1,6 +1,11 @@
 import * as vscode from 'vscode';
 import { MatchResultEvent, SelectOptionEvent } from '../event';
-import { MatchResult, MatchResultItem, Command } from '../constants';
+import {
+    MatchResult,
+    MatchResultItem,
+    Command,
+    SEARCH_MATCH_COUNT_STR,
+} from '../constants';
 import { TreeNode, FileNode, TextNode } from './TreeNode';
 
 /** treeItem 的 title */
@@ -47,9 +52,11 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         if (element === undefined) {
             return this.TreeData.map((item) => {
                 const { uri, range } = item;
-
+                const uriWithCount = uri.with({
+                    query: `${SEARCH_MATCH_COUNT_STR}${range.length}`,
+                });
                 let treeItem = new FileNode(
-                    uri,
+                    uriWithCount,
                     range.length <= 20
                         ? vscode.TreeItemCollapsibleState.Expanded
                         : vscode.TreeItemCollapsibleState.Collapsed

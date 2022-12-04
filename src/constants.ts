@@ -11,6 +11,8 @@ export enum Command {
 
 export const EXTENSION_SCHEME = 'jsReplaceTemp';
 
+export const SEARCH_MATCH_COUNT_STR = 'jsReplaceShowCountFor=true&count=';
+
 export const DefaultSetting = {
     // 匹配的子串
     MATCH_KEY: '$_',

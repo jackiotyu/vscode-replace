@@ -15,6 +15,10 @@
     "ext.config.setting.actionIgnoreCommands": "code action需要忽略的命令，填写jsReplace.commands中定义的\"name\"字段",
     "ext.config.setting.actionIgnoreCommands.items": "jsReplace.commands中定义的\"name\"",
     "ext.config.setting.actionNameFormat": "Code action 命令名称格式化，$name代表命令的name字段，$description代表命令的description字段",
+    "ext.commands.ReplaceItem": "替换",
+    "ext.commands.CancelReplaceItem": "删除",
+    "ext.commands.ReplaceFile": "替换全部",
+    "ext.commands.CancelReplaceFile": "删除",
     "ext.viewsContainers.activitybar.title": "JS Replace",
     "ext.views.ReplaceExplorer.webview.title": "匹配设置",
     "ext.views.ReplaceExplorer.result.title": "搜索结果",
@@ -31,5 +35,6 @@
     "getReplaceText.required": "请输入替换的js表达式",
     "modal.pickCommand.tooltip": "修改参数",
     "common.action.confirm": "确认",
-    "common.action.cancel": "取消"
+    "common.action.cancel": "取消",
+    "fileDecoration.matchCount": "匹配数:{0}"
 }

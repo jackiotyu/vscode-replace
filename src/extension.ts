@@ -8,6 +8,7 @@ import GlobalReplace from './globalReplace';
 import WorkspaceAdaptor from './lib/workspace';
 import ContentProvider from './contentProvider';
 import { FileNode, TextNode } from './ui/TreeNode';
+import CountDecorationProvider from './fileDecorationProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     // 主要命令
@@ -79,6 +80,10 @@ export function activate(context: vscode.ExtensionContext) {
             contentProvider
         );
 
+    let registerFileDecoration = vscode.window.registerFileDecorationProvider(
+        new CountDecorationProvider()
+    );
+
     context.subscriptions.push(registerTextDocument);
     context.subscriptions.push(commandTextTransform);
     context.subscriptions.push(commandDocReplace);
@@ -86,6 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(commandReplaceItem);
     context.subscriptions.push(commandReplaceFolder);
     context.subscriptions.push(commandCancelReplaceFolder);
+    context.subscriptions.push(registerFileDecoration);
     // 注册code action
     new RegisterCodeAction(context);
     // UI

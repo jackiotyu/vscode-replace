@@ -110,28 +110,28 @@
 			},
 			{
 				"command": "jsReplace.ReplaceItem",
-				"title": "ReplaceItem",
+				"title": "%ext.commands.ReplaceItem%",
 				"icon": "$(find-replace)",
 				"shortTitle": "replace",
 				"enablement": "viewItem == replaceTreeItem"
 			},
 			{
 				"command": "jsReplace.CancelReplaceItem",
-				"title": "CancelReplaceItem",
+				"title": "%ext.commands.CancelReplaceItem%",
 				"icon": "$(close)",
 				"shortTitle": "close",
 				"enablement": "viewItem == replaceTreeItem"
 			},
 			{
 				"command": "jsReplace.ReplaceFile",
-				"title": "ReplaceFile",
+				"title": "%ext.commands.ReplaceFile%",
 				"icon": "$(find-replace)",
 				"shortTitle": "replace",
 				"enablement": "viewItem == replaceTreeFile"
 			},
 			{
 				"command": "jsReplace.CancelReplaceFile",
-				"title": "CancelReplaceFile",
+				"title": "%ext.commands.CancelReplaceFile%",
 				"icon": "$(close)",
 				"shortTitle": "close",
 				"enablement": "viewItem == replaceTreeFile"

@@ -15,6 +15,10 @@
     "ext.config.setting.actionIgnoreCommands": "For commands that need to be ignored in code action, fill in the \"name\" field in jsReplace.commands",
     "ext.config.setting.actionIgnoreCommands.items": "\"name\" in jsReplace.commands",
     "ext.config.setting.actionNameFormat": "Code action name formatting, $name represents the command's name, $description represents the command's description",
+    "ext.commands.ReplaceItem": "Replace",
+    "ext.commands.CancelReplaceItem": "Delete",
+    "ext.commands.ReplaceFile": "Replace All",
+    "ext.commands.CancelReplaceFile": "Delete",
     "ext.viewsContainers.activitybar.title": "JS Replace",
     "ext.views.ReplaceExplorer.webview.title": "Match And Replace Setting",
     "ext.views.ReplaceExplorer.result.title": "Search Result",
@@ -31,5 +35,6 @@
     "getReplaceText.required": "Please enter the js expression for the substitution",
     "modal.pickCommand.tooltip": "Modify the parameters",
     "common.action.confirm": "confirm",
-    "common.action.cancel": "cancel"
+    "common.action.cancel": "cancel",
+    "fileDecoration.matchCount": "match count {0}"
 }
