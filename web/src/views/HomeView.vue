@@ -1,16 +1,19 @@
 <template>
     <div class="mainBox">
-        <vscode-dropdown
-            class="selectBox topButMargin"
-            v-model="currentCommandName"
-        >
-            <vscode-option
-                :value="command.name"
-                v-for="command in commands"
-                :key="command.name"
-                >{{ command.name }}</vscode-option
+        <div class="flexBox topButMargin">
+            <vscode-dropdown class="selectBox" v-model="currentCommandName">
+                <vscode-option
+                    :value="command.name"
+                    v-for="command in commands"
+                    :key="command.name"
+                    >{{ command.name }}</vscode-option
+                >
+            </vscode-dropdown>
+
+            <vscode-button class="btnLeftMargin" @click="creatingNewRule"
+                >新建</vscode-button
             >
-        </vscode-dropdown>
+        </div>
         <div class="flexBox topButMargin">
             <vscode-text-area
                 v-model="currentMatch"
@@ -138,6 +141,22 @@ export default {
                 value: replaceText.value,
             });
         }
+        // 新建临时预设
+        function creatingNewRule() {
+            let name = '临时预设' + Number(new Date());
+            let tempObj = {
+                name,
+                match: '',
+                replace: '',
+            };
+            commands.value.unshift(tempObj);
+            currentCommandName.value = name;
+            currentRuleName.value = name;
+            currentMatch.value = '';
+            replaceText.value = '';
+            includeFile.value = '';
+            excludeFile.value = '';
+        }
         // 保存预设
         function triggerSaveRule() {
             if (currentCommand.value && currentRuleName.value) {
@@ -195,16 +214,18 @@ export default {
             { immediate: true }
         );
 
-        watch(
-            replaceText,
+        watch(replaceText, (replaceText) => {
+            if (replaceText === '') {
+                return;
+            }
             debounce((replaceText: string | undefined) => {
                 sendMsg({
                     type: MsgType.CHANGE_REPLACE,
                     id: genID(),
                     value: replaceText,
                 });
-            }, 300)
-        );
+            }, 300);
+        });
 
         function commandsCallback(message: ExtCommandsPayload) {
             let newCommands = message.value || [];
@@ -231,6 +252,12 @@ export default {
             isLoading.value = false;
         }
 
+        /**
+         * sendMsg('', {
+         *
+         * })
+         */
+
         onMounted(() => {
             Bus.on('commands', commandsCallback);
             Bus.on('matchResultMsg', matchResultCallback);
@@ -252,6 +279,7 @@ export default {
             triggerMatch,
             triggerReplace,
             triggerSaveRule,
+            creatingNewRule,
             changeIncludeExp,
             changeExcludeExp,
             commands,
@@ -284,7 +312,8 @@ export default {
     flex-direction: column;
 
     .selectBox {
-        width: 100%;
+        flex: 1;
+        height: 29px;
         background-color: #1d1f23;
     }
     .matchingBtn {
