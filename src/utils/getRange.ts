@@ -95,12 +95,12 @@ export function getRange(text: string, reg: string) {
         const TEXT_BOX_WIDTH = 15;
         // 当前展示内容
         let end = startCol + match.text.length;
-        if (text.length > TEXT_BOX_WIDTH) {
+        if (match.text.length > TEXT_BOX_WIDTH) {
             previewOffset = startCol;
         } else {
             end >= TEXT_BOX_WIDTH
                 ? (previewOffset = end - TEXT_BOX_WIDTH)
-                : (previewOffset = startCol);
+                : (previewOffset = 0);
         }
 
         const includeText = lineSplit
