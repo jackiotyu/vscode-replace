@@ -277,6 +277,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.2.0",
+		"@types/lodash": "^4.14.191",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "16.x",
 		"@types/vscode": "^1.72.0",
@@ -300,6 +301,7 @@
 		"change-case": "^4.1.2",
 		"fs-extra": "^10.1.0",
 		"is-binary-path": "^2.1.0",
-		"isbinaryfile": "^5.0.0"
+		"isbinaryfile": "^5.0.0",
+		"lodash": "^4.17.21"
 	}
 }

@@ -26,7 +26,7 @@ export function* genReplace(
         yield result;
         let index = match.index;
         count++;
-        if (!includesIndexList.includes(index)) continue;
+        // if (!includesIndexList.includes(index)) continue;
         let text = match[0];
         let prevStr = result.slice(0, index + offset);
         let nextStr = result.slice(index + offset + text.length);

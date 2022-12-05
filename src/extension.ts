@@ -24,23 +24,11 @@ export function activate(context: vscode.ExtensionContext) {
         Command.DOC_REPLACE_EVENT,
         async (fsPath: string, rangeItem: RangeItem) => {
             let document = await vscode.workspace.openTextDocument(fsPath);
-            let { uri, range } = GlobalReplace.getMatchItem(fsPath) || {};
+            let { uri } = GlobalReplace.getMatchItem(fsPath) || {};
             let replaceUri = vscode.Uri.from({
                 scheme: EXTENSION_SCHEME,
-                query: JSON.stringify({
-                    match: GlobalReplace.getMatchExp(),
-                    replace: GlobalReplace.getReplaceExp(),
-                    range: range?.map((i) => i.start).toString(),
-                }),
                 path: fsPath,
             });
-
-            // vscode.workspace.onDidChangeTextDocument((e) => {
-            //     if (e.document.uri.fsPath === fsPath) {
-            //         console.log('🚀 文件更改 >>', fsPath);
-            //         contentProvider.onDidChangeEmitter.fire(replaceUri);
-            //     }
-            // });
 
             const currentRange = createRangeByRangeItem(rangeItem);
 
