@@ -46,9 +46,9 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
     // TODO 中断构建
     // 获取子级
-    getChildren(
+    async getChildren(
         element?: FileNode | undefined
-    ): vscode.ProviderResult<TreeNode[]> {
+    ): Promise<TreeNode[] | TextNode[] | undefined> {
         // 文件
         if (element === undefined) {
             return Array.from(this.TreeData.values()).map((item) => {
@@ -59,9 +59,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
                 });
                 let treeItem = new FileNode(
                     uriWithBadge,
-                    range.length <= 20
-                        ? vscode.TreeItemCollapsibleState.Expanded
-                        : vscode.TreeItemCollapsibleState.Collapsed
+                    vscode.TreeItemCollapsibleState.Expanded
                 );
                 treeItem.label = `${uri.fsPath} (${range.length})`;
                 treeItem.tooltip = `${uri.fsPath} (${localize(
@@ -75,22 +73,21 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
         }
 
         // 具体匹配位置
-        return this.TreeData.get(element.resourceUri?.fsPath || '')?.range.map(
-            (item, index) => {
+        await Promise.resolve().then();
+        let range = this.TreeData.get(element.resourceUri?.fsPath || '')?.range;
+        let dataList: TextNode[] = [];
+        if (range) {
+            for (let index = 0; index < range.length; index++) {
+                const item = range[index];
                 const { text, includeText, previewOffset, startCol } = item;
-                let currentText = new TreeItemLabel(
-                    includeText.slice(previewOffset),
+                let currentText = new TreeItemLabel(includeText, [
                     [
-                        [
-                            startCol - previewOffset,
-                            startCol - previewOffset + text.length,
-                        ],
-                    ]
-                );
+                        startCol - previewOffset,
+                        startCol - previewOffset + text.length,
+                    ],
+                ]);
                 let treeItem = new TextNode(currentText);
-                treeItem.tooltip = new vscode.MarkdownString(includeText);
-                treeItem.collapsibleState =
-                    vscode.TreeItemCollapsibleState.None;
+                treeItem.tooltip = includeText;
                 treeItem.contextValue = 'replaceTreeItem';
                 treeItem.index = index;
                 treeItem.command = {
@@ -98,9 +95,10 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
                     arguments: [element.resourceUri?.fsPath, item],
                     title: '',
                 };
-                return treeItem;
+                dataList.push(treeItem);
             }
-        );
+        }
+        return dataList;
     }
 
     // 构造tree节点

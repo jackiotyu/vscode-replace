@@ -90,9 +90,6 @@ export function getRange(text: string, reg: string) {
         prevMatchEnd = match.end;
         prevMatchEndCol = endCol;
         prevMatchEndLine = endLineNumber;
-        const includeText = lineSplit
-            .slice(startLineNumber, endLineNumber + 1)
-            .join('\n');
 
         let previewOffset = 0;
         const TEXT_BOX_WIDTH = 15;
@@ -105,6 +102,15 @@ export function getRange(text: string, reg: string) {
                 ? (previewOffset = end - TEXT_BOX_WIDTH)
                 : (previewOffset = startCol);
         }
+
+        const includeText = lineSplit
+            .slice(
+                startLineNumber,
+                Math.min(startLineNumber + 1, endLineNumber + 1)
+            )
+            .join('\n')
+            .slice(previewOffset, previewOffset + 60);
+
         return {
             startLine: startLineNumber,
             startCol,

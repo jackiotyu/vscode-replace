@@ -217,9 +217,7 @@ export default {
         watch(
             replaceText,
             debounce((replaceText: string | undefined) => {
-                if (replaceText === '') {
-                    return;
-                }
+                if (!replaceText) return;
                 sendMsg({
                     type: MsgType.CHANGE_REPLACE,
                     id: genID(),

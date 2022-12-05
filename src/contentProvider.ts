@@ -12,8 +12,12 @@ export default class ContentProvider
     onDidChange = this.onDidChangeEmitter.event;
     protected listenChange?: vscode.Disposable;
     protected listenClose?: vscode.Disposable;
+    protected listenCancel?: vscode.Disposable;
     /** TODO 监听文档修改事件 */
-    triggerChange = debounce((uri) => this.onDidChangeEmitter.fire(uri), 300);
+    triggerChange = debounce(
+        (uri: vscode.Uri) => this.onDidChangeEmitter.fire(uri),
+        300
+    );
 
     // 提供只读文档内容
     // TODO 添加缓存
@@ -25,7 +29,35 @@ export default class ContentProvider
         try {
             this.listenClose?.dispose();
             this.listenChange?.dispose();
+            this.listenCancel?.dispose();
             let { path } = uri;
+            let isClose = false;
+            // 监听修改事件
+            this.listenChange = vscode.workspace.onDidChangeTextDocument(
+                (e) => {
+                    if (
+                        e.document.uri.scheme === EXTENSION_SCHEME &&
+                        e.document.uri.fsPath === uri.fsPath
+                    ) {
+                        this.triggerChange(uri);
+                    }
+                }
+            );
+            this.listenCancel = cancelToken.onCancellationRequested(() => {
+                isClose = true;
+            });
+            // 监听关闭事件
+            this.listenClose = vscode.workspace.onDidCloseTextDocument((e) => {
+                if (
+                    e.uri.scheme === EXTENSION_SCHEME &&
+                    e.uri.fsPath === uri.fsPath
+                ) {
+                    this.listenChange?.dispose();
+                    this.listenClose?.dispose();
+                    isClose = true;
+                }
+            });
+
             // 获取源文件内容
             let document = await vscode.workspace.openTextDocument(path);
             docText = document.getText();
@@ -39,31 +71,15 @@ export default class ContentProvider
             let gen = genReplace(docText, match, replace, includeIndexList);
             let current = gen.next();
             let value = current.value;
-            while (!current.done && !cancelToken.isCancellationRequested) {
+            while (
+                !current.done &&
+                !cancelToken.isCancellationRequested &&
+                !isClose
+            ) {
                 current = gen.next();
                 value = current.value;
+                await new Promise((resolve) => setTimeout(resolve, 0));
             }
-            // 监听修改事件
-            this.listenChange = vscode.workspace.onDidChangeTextDocument(
-                (e) => {
-                    if (
-                        e.document.uri.scheme !== EXTENSION_SCHEME &&
-                        e.document.uri.fsPath === uri.fsPath
-                    ) {
-                        this.triggerChange(uri);
-                    }
-                }
-            );
-            // 监听关闭事件
-            this.listenClose = vscode.workspace.onDidCloseTextDocument((e) => {
-                if (
-                    e.uri.scheme === EXTENSION_SCHEME &&
-                    e.uri.fsPath === uri.fsPath
-                ) {
-                    this.listenChange?.dispose();
-                    this.listenClose?.dispose();
-                }
-            });
             return value;
         } catch (error: any) {
             vscode.window.showWarningMessage(error.message, { modal: true });
