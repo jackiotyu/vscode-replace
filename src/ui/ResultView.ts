@@ -107,7 +107,7 @@ class TreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 }
 
-// TODO 选项区
+// 匹配结果展示
 export class View {
     protected treeView?: vscode.TreeView<vscode.TreeItem>;
     constructor(context: vscode.ExtensionContext) {
