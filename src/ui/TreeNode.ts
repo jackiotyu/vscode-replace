@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { RangeItem } from '../constants';
+import { ExtendRangeItem } from '../constants';
 
 export class FileNode extends vscode.TreeItem {
-    range: RangeItem[] = [];
+    range: ExtendRangeItem[] = [];
     replaceText: string = '';
 }
 export class TextNode extends vscode.TreeItem {

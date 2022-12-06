@@ -97,7 +97,7 @@ class GlobalReplace {
                     }
                     try {
                         const file = await readFile(item.fsPath, 'utf8');
-                        const range = getRange(file, this.matchExp);
+                        const range = getRange(file, this.matchExp, true);
                         if (range.length) {
                             matchResultMap.set(item.fsPath, {
                                 uri: item,

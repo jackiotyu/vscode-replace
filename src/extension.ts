@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { transform } from './main';
 import { ReplaceExplorer } from './ui';
-import { Command, RangeItem, EXTENSION_SCHEME } from './constants';
+import { Command, ExtendRangeItem, EXTENSION_SCHEME } from './constants';
 import { RegisterCodeAction } from './codeAction';
 import { createRangeByRangeItem } from './utils/getRange';
 import GlobalReplace from './globalReplace';
@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     let commandDocReplace = vscode.commands.registerCommand(
         Command.DOC_REPLACE_EVENT,
-        async (fsPath: string, rangeItem: RangeItem) => {
+        async (fsPath: string, rangeItem: ExtendRangeItem) => {
             let document = await vscode.workspace.openTextDocument(fsPath);
             let { uri } = GlobalReplace.getMatchItem(fsPath) || {};
             let replaceUri = vscode.Uri.from({

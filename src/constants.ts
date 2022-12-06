@@ -37,8 +37,7 @@ export const DefaultSetting = {
     ACTION_NAME_FORMAT: 'JSR $name ($description)',
 };
 
-/** 匹配到的内容，记录范围数据 */
-export interface RangeItem {
+export interface NormalRangeItem {
     /** 开始行号 */
     startLine: number;
     /** 开始行索引 */
@@ -50,6 +49,10 @@ export interface RangeItem {
     group: string[];
     /** 匹配内容 */
     text: string;
+}
+
+/** 匹配到的内容，记录范围数据 */
+export interface ExtendRangeItem extends NormalRangeItem {
     /** 匹配的行内容 */
     includeText: string;
     /** 文本中的起始点 */
@@ -61,7 +64,7 @@ export interface RangeItem {
 /** 用于构建treeView */
 export interface MatchResultItem {
     uri: vscode.Uri;
-    range: RangeItem[];
+    range: ExtendRangeItem[];
 }
 
 export type MatchResultMap = Map<string, MatchResultItem>;

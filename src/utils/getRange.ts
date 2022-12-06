@@ -1,14 +1,16 @@
 import * as vscode from 'vscode';
 import { isReg } from './utils';
 import { ReplaceCommand } from '../common';
-import { RangeItem } from '../constants';
+import { ExtendRangeItem, NormalRangeItem } from '../constants';
 
 /**
  * 生成vscode range
  * @param rangeItem
  * @returns
  */
-export function createRangeByRangeItem(rangeItem: RangeItem): vscode.Range {
+export function createRangeByRangeItem(
+    rangeItem: NormalRangeItem
+): vscode.Range {
     return new vscode.Range(
         new vscode.Position(rangeItem.startLine, rangeItem.startCol),
         new vscode.Position(rangeItem.endLine, rangeItem.endCol)
@@ -43,7 +45,27 @@ export function getLineCountAndLastLineLength(text: string): {
     };
 }
 
-export function getRange(text: string, reg: string) {
+/**
+ *
+ * @param text 源文本
+ * @param reg 用于匹配的正则字符串
+ * @param needPreviewInfo 是否需要预览相关的属性
+ */
+export function getRange(
+    text: string,
+    reg: string,
+    needPreviewInfo: true
+): ExtendRangeItem[];
+export function getRange(
+    text: string,
+    reg: string,
+    needPreviewInfo?: false
+): NormalRangeItem[];
+export function getRange(
+    text: string,
+    reg: string,
+    needPreviewInfo?: boolean
+): NormalRangeItem[] {
     let regexp = RegExp(reg, 'mg');
     let matchGroup;
     let res = [];
@@ -51,7 +73,6 @@ export function getRange(text: string, reg: string) {
     const MAX_COUNT = 20000;
     let max = text.length > MAX_COUNT ? MAX_COUNT : text.length;
     let count = 0;
-    let lineSplit = text.split('\n');
 
     while ((matchGroup = regexp.exec(text)) !== null && count <= max) {
         let matchText = matchGroup[0];
@@ -70,6 +91,7 @@ export function getRange(text: string, reg: string) {
     let prevMatchEnd = 0;
     let prevMatchEndCol = 0;
     let prevMatchEndLine = 0;
+    let lineSplit = text.split('\n');
 
     const ranges = res.map((match) => {
         const inBetweenText = text.slice(prevMatchEnd, match.start);
@@ -90,6 +112,19 @@ export function getRange(text: string, reg: string) {
         prevMatchEnd = match.end;
         prevMatchEndCol = endCol;
         prevMatchEndLine = endLineNumber;
+
+        let rangeItem = {
+            startLine: startLineNumber,
+            startCol,
+            endLine: endLineNumber,
+            endCol,
+            group: match.group,
+            text: match.text,
+        };
+
+        if (!needPreviewInfo) {
+            return rangeItem;
+        }
 
         let previewOffset = 0;
         const TEXT_BOX_WIDTH = 15;
@@ -112,12 +147,7 @@ export function getRange(text: string, reg: string) {
             .slice(previewOffset, previewOffset + 60);
 
         return {
-            startLine: startLineNumber,
-            startCol,
-            endLine: endLineNumber,
-            endCol,
-            group: match.group,
-            text: match.text,
+            ...rangeItem,
             includeText,
             previewOffset,
             start: match.start,
