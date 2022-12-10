@@ -29,5 +29,7 @@
     "getReplaceText.required": "Please enter the js expression for the substitution",
     "modal.pickCommand.tooltip": "Modify the parameters",
     "common.action.confirm": "confirm",
-    "common.action.cancel": "cancel"
+    "common.action.cancel": "cancel",
+    "example.command.name": "Example",
+    "example.command.description": "Use the example setting(Match the number and add one)"
 }

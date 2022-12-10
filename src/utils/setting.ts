@@ -1,6 +1,6 @@
-import exp = require('constants');
 import * as vscode from 'vscode';
 import { DefaultSetting, Command } from '../constants';
+import localize from '../localize';
 
 const DEFAULT_SETTING = {
     match: DefaultSetting.MATCH_KEY,
@@ -9,6 +9,13 @@ const DEFAULT_SETTING = {
     actionIgnoreCommands: DefaultSetting.NONE,
     actionFormat: DefaultSetting.ACTION_NAME_FORMAT,
     actionPattern: DefaultSetting.ACTION_PATTERN,
+};
+
+const EXAMPLE_COMMAND = {
+    name: localize('example.command.name'),
+    match: '(\\d+)',
+    replace: '+$1 + 1',
+    description: localize('example.command.description'),
 };
 
 export function getSetting(): ReplaceSetting {
@@ -23,9 +30,9 @@ export function getCommands() {
         .getConfiguration(Command.EXTENSION_NAME)
         .get('commands') as ReplaceGroup;
     if (!group?.length) {
-        return;
+        return [EXAMPLE_COMMAND];
     }
-    return group;
+    return [EXAMPLE_COMMAND, ...group];
 }
 
 export function getActionCommands() {

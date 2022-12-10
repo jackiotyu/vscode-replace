@@ -29,5 +29,7 @@
     "getReplaceText.required": "请输入替换的js表达式",
     "modal.pickCommand.tooltip": "修改参数",
     "common.action.confirm": "确认",
-    "common.action.cancel": "取消"
+    "common.action.cancel": "取消",
+    "example.command.name": "示例",
+    "example.command.description": "使用示例配置（匹配数字并加一）"
 }
