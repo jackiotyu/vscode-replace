@@ -72,16 +72,17 @@ class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
         action.edit = new vscode.WorkspaceEdit();
 
         activeEditor.edit((builder) => {
+            let index = selections.length;
             for (const selection of selections) {
                 if (action.edit) {
                     // TODO 点击单词位置，获取整个单词
                     let text = document.getText(selection);
                     let replaceText = text;
+                    index -= 1;
                     try {
                         // 获取转换后的文本
-                        let index = 0;
                         replaceText = text.replace(reg, (text, ...group) =>
-                            getReplaceText(command, index++, text, ...group)
+                            getReplaceText(command, index, text, ...group)
                         );
                     } catch (error) {}
                     action.edit?.replace(document.uri, selection, replaceText);
