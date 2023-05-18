@@ -11,6 +11,8 @@ interface ReplaceSetting {
     // 开启更多参数
     // moreParam?: boolean;
     // keyMap?: KeyMap;
+    orderOffset?: number;
+    order?: string;
     match?: string;
     prefix?: string;
     actionLanguages?: string[];

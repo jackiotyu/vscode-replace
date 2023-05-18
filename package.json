@@ -3,7 +3,7 @@
 	"name": "js-replace",
 	"displayName": "JS Replace",
 	"description": "Replace the matching content with a JS statement(使用js语句替换匹配的内容)",
-	"version": "0.2.6",
+	"version": "0.2.7",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
@@ -73,6 +73,16 @@
 					"type": "object",
 					"description": "%ext.config.setting%",
 					"properties": {
+						"order": {
+							"type": "string",
+							"default": "$order",
+							"description": "%ext.config.setting.order%"
+						},
+						"orderOffset": {
+							"type": "number",
+							"default": 0,
+							"description": "%ext.config.setting.orderOffset%"
+						},
 						"match": {
 							"type": "string",
 							"default": "$_",
@@ -148,6 +158,8 @@
 			"jsReplace.setting": {
 				"match": "$_",
 				"prefix": "$",
+				"orderOffset": 0,
+				"order": "$order",
 				"actionPattern": "**",
 				"actionLanguages": [
 					"javascript",

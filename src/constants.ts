@@ -13,6 +13,8 @@ export const DefaultSetting = {
     // 匹配的子串
     MATCH_KEY: '$_',
     PREFIX_KEY: '$',
+    ORDER_OFFSET: 0,
+    ORDER_KEY: '$order',
     NONE: null,
     ACTION_LANGUAGES: [
         'javascript',

@@ -9,12 +9,12 @@ match text and transform with JavaScript expression
 **Table of Contents**
 
 - [Features](#features)
-  - [Use command](#use-command)
-  - [Use code action](#use-code-action)
+    - [Use command](#use-command)
+    - [Use code action](#use-code-action)
 - [Configuration](#configuration)
-  - [Parameter description of replace](#parameter-description-of-replace)
-  - [Configuration example](#configuration-example)
-  - [Change case config example](#change-case-config-example)
+    - [Parameter description of replace](#parameter-description-of-replace)
+    - [Configuration example](#configuration-example)
+    - [Change case config example](#change-case-config-example)
 
 ## Features
 
@@ -48,6 +48,7 @@ match text and transform with JavaScript expression
 | ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `$1` to `$n` | `String` | Matched groupings from `$1` to `$n` (The variable prefix can be modified in the configuration)                                                       |
 | `$_`         | `String` | The substring that the regular expression matches (The variable name can be modified in the configuration)                                           |
+| `$order`     | `Number` | The numerical order, start with 0 (The variable name can be modified in the configuration)                                                           |
 | `ChangeCase` | `Object` | The built-in [change case](https://www.npmjs.com/package/change-case) variable contains change-case utility functions, such as ChangeCase.pascalCase |
 
 </details>
@@ -83,6 +84,10 @@ match text and transform with JavaScript expression
     // Replace settings, configure variable name mappings for more parameters
     // and $1 to $n prefix customization
     "jsReplace.setting": {
+        // Add to each ordinal number, set to 1, indicating that the ordinal starts at 1
+        "orderOffset": 0,
+        // Matching ordinal order(start with 0)
+        "order": "$order",
         // Matching substrings
         "match": "$_",
         // If the prefix matches the grouping variable,

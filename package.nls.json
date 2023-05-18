@@ -9,6 +9,8 @@
     "ext.config.commands.items.description": "Describes the command content",
     "ext.config.setting": "Replace settings, configure variable name mappings for more parameters and $1 to $n prefix customization",
     "ext.config.setting.match": "Matching substrings",
+    "ext.config.setting.orderOffset": "Add to each ordinal number, set to 1, indicating that the ordinal starts at 1",
+    "ext.config.setting.order": "Matching numerical order(start with 0)",
     "ext.config.setting.prefix": "If the prefix matches the grouping variable, set to $, the variable is $1 to $n",
     "ext.config.setting.actionLanguages": "Register the command with the code action",
     "ext.config.setting.actionLanguages.items": "A language id, like `typescript`.",

@@ -79,8 +79,9 @@ class ReplaceCodeActionProvider implements vscode.CodeActionProvider {
                     let replaceText = text;
                     try {
                         // 获取转换后的文本
+                        let index = 0;
                         replaceText = text.replace(reg, (text, ...group) =>
-                            getReplaceText(command, text, ...group)
+                            getReplaceText(command, index++, text, ...group)
                         );
                     } catch (error) {}
                     action.edit?.replace(document.uri, selection, replaceText);

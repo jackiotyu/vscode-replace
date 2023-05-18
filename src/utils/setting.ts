@@ -3,6 +3,8 @@ import { DefaultSetting, Command } from '../constants';
 import localize from '../localize';
 
 const DEFAULT_SETTING = {
+    orderOffset: 0,
+    order: DefaultSetting.ORDER_KEY,
     match: DefaultSetting.MATCH_KEY,
     prefix: DefaultSetting.PREFIX_KEY,
     actionLanguages: DefaultSetting.ACTION_LANGUAGES,

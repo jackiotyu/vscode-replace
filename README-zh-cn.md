@@ -9,12 +9,12 @@
 **目录**
 
 - [功能](#功能)
-  - [使用命令](#使用命令)
-  - [使用 code action](#使用-code-action)
+    - [使用命令](#使用命令)
+    - [使用 code action](#使用-code-action)
 - [配置](#配置)
-  - [replace参数说明](#replace参数说明)
-  - [配置示例](#配置示例)
-  - [change case 配置](#change-case-配置)
+    - [replace参数说明](#replace参数说明)
+    - [配置示例](#配置示例)
+    - [change case 配置](#change-case-配置)
 
 ## 功能
 
@@ -74,6 +74,10 @@
         }
     ],
     "jsReplace.setting": {
+        // 加到每个序号上，设置为1，代表序号从1开始
+        "orderOffset": 0,
+        // 匹配的序号（默认从0开始）
+        "order": "$order",
         // 匹配的子串变量
         "match": "$_",
         // 匹配到分组变量的前缀，设置为$，则变量为$1到$n

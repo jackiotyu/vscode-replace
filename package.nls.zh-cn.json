@@ -9,6 +9,8 @@
     "ext.config.commands.items.description": "描述命令内容",
     "ext.config.setting": "replace设置, 配置更多参数的变量名映射和$1到$n前缀自定义",
     "ext.config.setting.match": "匹配的子串",
+    "ext.config.setting.orderOffset": "加到每个序号上，设置为1，代表序号从1开始",
+    "ext.config.setting.order": "匹配的序号（从0开始）",
     "ext.config.setting.prefix": "匹配到分组变量的前缀，设置为$，则变量为$1到$n",
     "ext.config.setting.actionLanguages": "将命令注册到code action中",
     "ext.config.setting.actionLanguages.items": "支持的语言，例如：typescript",
